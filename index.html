@@ -1742,9 +1742,1434 @@ body{
   }
 }
 
+
+/* ===== Advanced practice mode ===== */
+.advanced-mode-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+  padding:12px 14px;
+  margin-bottom:14px;
+  border:1px solid rgba(255,255,255,.11);
+  border-radius:14px;
+  background:rgba(12,17,24,.30);
+}
+.advanced-title{
+  font-size:13px;
+  font-weight:900;
+  color:#f4f7ff;
+  margin-bottom:3px;
+}
+.advanced-desc{
+  font-size:10px;
+  color:var(--muted);
+  line-height:1.45;
+}
+/* ===== Beginner / Advanced practice selector ===== */
+.practice-mode-segment{
+  display:flex;
+  align-items:center;
+  flex:0 0 auto;
+  padding:3px;
+  gap:3px;
+  border:1px solid rgba(255,255,255,.11);
+  border-radius:12px;
+  background:rgba(5,9,15,.30);
+}
+.mode-btn{
+  min-height:30px !important;
+  padding:6px 10px !important;
+  border:0 !important;
+  border-radius:9px !important;
+  background:transparent !important;
+  color:#929db2 !important;
+  font-size:11px !important;
+  font-weight:850 !important;
+  box-shadow:none !important;
+}
+.mode-btn:hover{
+  color:#eef3fb !important;
+  background:rgba(255,255,255,.045) !important;
+}
+.mode-btn.active{
+  color:#efffff !important;
+  background:
+    linear-gradient(180deg,rgba(75,215,183,.28),rgba(39,149,130,.19)) !important;
+  border:1px solid rgba(116,255,220,.23) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.07),
+    0 0 15px rgba(72,222,184,.09) !important;
+}
+
+
+.case-mode-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+  padding:12px 14px;
+  margin-bottom:14px;
+  border:1px solid rgba(255,255,255,.11);
+  border-radius:14px;
+  background:rgba(12,17,24,.30);
+}
+
+
+/* ===== Settings layout repair ===== */
+.advanced-mode-row,
+.case-mode-row{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) auto !important;
+  align-items:center !important;
+  gap:16px !important;
+}
+.practice-mode-segment{
+  justify-self:end;
+}
+@media(max-width:720px){
+  .advanced-mode-row,
+  .case-mode-row{
+    grid-template-columns:1fr !important;
+  }
+  .practice-mode-segment{
+    justify-self:stretch;
+  }
+  .practice-mode-segment .mode-btn{
+    flex:1;
+  }
+}
+
+
+/* ===== Articulation guide ===== */
+.articulation-guide{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  min-height:28px;
+  margin-top:2px;
+  color:#dce5f7;
+  font-size:12px;
+  font-weight:750;
+  text-align:center;
+}
+.articulation-badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:58px;
+  padding:4px 8px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.06);
+  color:#a8f4df;
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:-.02em;
+}
+.hold-timer{
+  min-width:74px;
+  color:#ffd48a;
+  font-family:var(--mono-font);
+  font-size:11px;
+  font-weight:900;
+  font-variant-numeric:tabular-nums;
+}
+.hold-timer.done{
+  color:#82f0c7;
+}
+@media(max-height:820px){
+  .articulation-guide{
+    min-height:22px;
+    font-size:10px;
+    gap:6px;
+  }
+  .articulation-badge{
+    min-width:48px;
+    padding:3px 7px;
+    font-size:9px;
+  }
+  .hold-timer{
+    min-width:64px;
+    font-size:10px;
+  }
+}
+
+
+/* ===== Full-screen settings/library overlay ===== */
+.settings-panel{
+  transition:
+    opacity .22s ease,
+    transform .26s cubic-bezier(.22,.61,.36,1),
+    visibility .22s ease;
+}
+.settings-panel.collapsed{
+  display:block !important;
+  position:fixed !important;
+  left:50% !important;
+  top:50% !important;
+  width:min(1180px,calc(100vw - 32px)) !important;
+  height:min(88vh,900px) !important;
+  max-height:88vh !important;
+  transform:translate(-50%,-46%) scale(.985) !important;
+  opacity:0 !important;
+  visibility:hidden !important;
+  pointer-events:none !important;
+  z-index:1002 !important;
+  overflow:auto !important;
+}
+.settings-panel:not(.collapsed){
+  position:fixed !important;
+  left:50% !important;
+  top:50% !important;
+  width:min(1180px,calc(100vw - 32px)) !important;
+  height:min(88vh,900px) !important;
+  max-height:88vh !important;
+  transform:translate(-50%,-50%) scale(1) !important;
+  opacity:1 !important;
+  visibility:visible !important;
+  pointer-events:auto !important;
+  z-index:1002 !important;
+  overflow:auto !important;
+  margin:0 !important;
+  padding:22px !important;
+  border-radius:24px !important;
+  background:
+    linear-gradient(180deg,rgba(18,23,31,.62),rgba(10,14,20,.52)) !important;
+  border:1px solid rgba(255,255,255,.16) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.12),
+    0 30px 80px rgba(0,0,0,.48) !important;
+  -webkit-backdrop-filter:blur(30px) saturate(1.10) !important;
+  backdrop-filter:blur(30px) saturate(1.10) !important;
+}
+
+/* backdrop behind settings */
+body.settings-open::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:1000;
+  background:rgba(4,7,12,.42);
+  -webkit-backdrop-filter:blur(6px);
+  backdrop-filter:blur(6px);
+  pointer-events:none;
+}
+
+/* keep toggle above backdrop */
+.top-control-row{
+  position:relative;
+  z-index:1003;
+}
+body.settings-open .workspace-toggle{
+  position:fixed;
+  top:18px;
+  right:24px;
+  z-index:1004;
+}
+
+/* Library becomes part of the same overlay feel when opened */
+.main:not(.library-hidden)>aside.panel{
+  position:fixed !important;
+  left:50% !important;
+  top:50% !important;
+  width:min(1180px,calc(100vw - 32px)) !important;
+  max-width:none !important;
+  max-height:88vh !important;
+  transform:translate(-50%,-50%) !important;
+  z-index:1001 !important;
+  opacity:0 !important;
+  pointer-events:none !important;
+}
+
+/* status pills: no overlap, fixed flex row */
+.status{
+  display:grid !important;
+  grid-template-columns:1fr auto !important;
+  align-items:center !important;
+  gap:14px !important;
+}
+.status>div:first-child{
+  grid-column:1 !important;
+  width:100% !important;
+}
+.status-pills-wrap{
+  grid-column:2 !important;
+  display:flex !important;
+  align-items:center !important;
+  gap:8px !important;
+  position:static !important;
+}
+.status .pill{
+  position:static !important;
+  top:auto !important;
+  right:auto !important;
+  min-width:72px !important;
+  flex:0 0 auto !important;
+}
+
+@media(max-width:900px){
+  .settings-panel.collapsed,
+  .settings-panel:not(.collapsed){
+    width:calc(100vw - 18px) !important;
+    height:92vh !important;
+    max-height:92vh !important;
+    padding:16px !important;
+  }
+  body.settings-open .workspace-toggle{
+    top:10px;
+    right:12px;
+  }
+  .status{
+    grid-template-columns:1fr !important;
+  }
+  .status-pills-wrap{
+    grid-column:1 !important;
+    justify-content:center !important;
+    flex-wrap:wrap !important;
+  }
+}
+
+
+.overlay-section-title{
+  font-size:13px;
+  font-weight:900;
+  margin-bottom:8px;
+  color:#f2f6ff;
+}
+.overlay-library-slot{
+  margin-bottom:16px;
+}
+.overlay-library-slot>aside.panel{
+  position:static !important;
+  width:100% !important;
+  max-width:none !important;
+  max-height:none !important;
+  transform:none !important;
+  opacity:1 !important;
+  pointer-events:auto !important;
+  z-index:auto !important;
+  display:block !important;
+  margin:0 !important;
+  padding:14px !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.07),
+    0 8px 24px rgba(0,0,0,.14) !important;
+}
+.overlay-library-slot .song-list{
+  max-height:180px !important;
+}
+
+
+/* ===== Practice guide spacing / cleanup ===== */
+
+/* 기호 배지 + 설명 전체를 하나의 그룹으로 보고 정확히 가운데 정렬 */
+.articulation-guide{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  width:100% !important;
+  max-width:900px !important;
+  margin:8px auto 0 !important;
+  padding:0 16px !important;
+  box-sizing:border-box !important;
+  text-align:center !important;
+  gap:10px !important;
+}
+.articulation-guide > *{
+  flex:0 0 auto;
+}
+.articulation-badge{
+  min-width:64px !important;
+  text-align:center !important;
+}
+#articulationText{
+  text-align:center !important;
+}
+
+/* 기호 설명과 하단 안내문 사이 간격 */
+.practice-feedback{
+  margin-top:12px !important;
+  min-height:20px !important;
+  text-align:center !important;
+}
+
+/* 다음음 / 누르는 키 / 선택곡 정보 박스 숨김 */
+.info{
+  display:none !important;
+}
+
+/* 정보 박스가 사라진 만큼 키보드가 자연스럽게 위로 붙도록 */
+.keyboard-shell{
+  margin-top:10px !important;
+}
+
+/* 낮은 화면에서도 간격은 너무 붙지 않게 유지 */
+@media(max-height:820px){
+  .articulation-guide{
+    margin-top:5px !important;
+    gap:8px !important;
+  }
+  .practice-feedback{
+    margin-top:8px !important;
+  }
+}
+
+
+/* ===== Stable settings modal overlay ===== */
+
+/* Disable the older pseudo backdrop blur entirely */
+body.settings-open::before{
+  display:none !important;
+}
+
+/* Real backdrop: dim only, no blur */
+.settings-backdrop{
+  position:fixed;
+  inset:0;
+  z-index:1998;
+  background:rgba(2,5,10,.58);
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transition:opacity .18s ease, visibility .18s ease;
+}
+.settings-backdrop.show{
+  opacity:1;
+  visibility:visible;
+  pointer-events:auto;
+}
+
+/* Settings panel is mounted directly under body, so it always uses the viewport */
+#settingsPanel{
+  box-sizing:border-box !important;
+}
+#settingsPanel.collapsed{
+  display:block !important;
+  position:fixed !important;
+  left:50% !important;
+  top:50% !important;
+  width:min(1180px,calc(100vw - 40px)) !important;
+  height:min(86vh,860px) !important;
+  max-height:86vh !important;
+  transform:translate(-50%,-48%) scale(.985) !important;
+  opacity:0 !important;
+  visibility:hidden !important;
+  pointer-events:none !important;
+  z-index:1999 !important;
+  overflow:auto !important;
+}
+#settingsPanel:not(.collapsed){
+  display:block !important;
+  position:fixed !important;
+  left:50% !important;
+  top:50% !important;
+  width:min(1180px,calc(100vw - 40px)) !important;
+  height:min(86vh,860px) !important;
+  max-height:86vh !important;
+  transform:translate(-50%,-50%) scale(1) !important;
+  opacity:1 !important;
+  visibility:visible !important;
+  pointer-events:auto !important;
+  z-index:1999 !important;
+  overflow:auto !important;
+  margin:0 !important;
+  padding:22px !important;
+  border-radius:24px !important;
+
+  /* glass panel itself only */
+  background:
+    linear-gradient(180deg,rgba(18,24,33,.66),rgba(8,13,20,.58)) !important;
+  border:1px solid rgba(255,255,255,.17) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.12),
+    0 30px 90px rgba(0,0,0,.48) !important;
+  -webkit-backdrop-filter:blur(24px) saturate(1.08) !important;
+  backdrop-filter:blur(24px) saturate(1.08) !important;
+
+  transition:
+    opacity .2s ease,
+    transform .24s cubic-bezier(.22,.61,.36,1),
+    visibility .2s ease !important;
+}
+
+/* no weird inherited clipping/position rules */
+body.settings-open{
+  overflow:hidden !important;
+}
+body.settings-open .main,
+body.settings-open main.panel{
+  overflow:hidden !important;
+}
+
+/* unified button stays above modal */
+body.settings-open .workspace-toggle{
+  position:fixed !important;
+  top:18px !important;
+  right:24px !important;
+  z-index:2001 !important;
+}
+
+/* library inside settings modal */
+#settingsPanel .overlay-library-slot{
+  width:100% !important;
+  margin-bottom:16px !important;
+}
+#settingsPanel .overlay-library-slot > aside.panel{
+  display:block !important;
+  position:static !important;
+  left:auto !important;
+  top:auto !important;
+  width:100% !important;
+  max-width:none !important;
+  height:auto !important;
+  max-height:none !important;
+  transform:none !important;
+  opacity:1 !important;
+  visibility:visible !important;
+  pointer-events:auto !important;
+  z-index:auto !important;
+  margin:0 !important;
+}
+
+/* remove obsolete direct-child fixed library styling */
+.main:not(.library-hidden)>aside.panel{
+  position:static !important;
+  transform:none !important;
+}
+
+/* Practice guide exact centering + spacing */
+.articulation-guide{
+  display:grid !important;
+  grid-template-columns:auto auto auto !important;
+  justify-content:center !important;
+  align-items:center !important;
+  column-gap:10px !important;
+  width:100% !important;
+  max-width:900px !important;
+  margin:8px auto 0 !important;
+  text-align:center !important;
+}
+#articulationText{
+  text-align:center !important;
+}
+.practice-feedback{
+  margin-top:14px !important;
+}
+
+/* hidden non-essential info stays gone */
+.info{
+  display:none !important;
+}
+
+@media(max-width:720px){
+  #settingsPanel.collapsed,
+  #settingsPanel:not(.collapsed){
+    width:calc(100vw - 18px) !important;
+    height:92vh !important;
+    max-height:92vh !important;
+    padding:15px !important;
+    border-radius:18px !important;
+  }
+  body.settings-open .workspace-toggle{
+    top:10px !important;
+    right:12px !important;
+  }
+  .articulation-guide{
+    grid-template-columns:auto minmax(0,auto) !important;
+  }
+  .hold-timer{
+    grid-column:1/-1;
+    justify-self:center;
+  }
+}
+
+
+/* ===== Responsive centering repair ===== */
+.articulation-guide{
+  display:flex !important;
+  justify-content:center !important;
+  align-items:center !important;
+  width:100% !important;
+  max-width:none !important;
+  margin:8px auto 0 !important;
+  padding:0 !important;
+  box-sizing:border-box !important;
+  text-align:center !important;
+}
+.articulation-center-group{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:10px !important;
+  width:max-content !important;
+  max-width:100% !important;
+  margin:0 auto !important;
+  text-align:center !important;
+}
+.articulation-badge{
+  flex:0 0 auto !important;
+  min-width:64px !important;
+  text-align:center !important;
+}
+#articulationText{
+  flex:0 1 auto !important;
+  text-align:center !important;
+  white-space:nowrap;
+}
+.hold-timer{
+  flex:0 0 auto !important;
+  text-align:left !important;
+}
+
+/* Current note stays centered regardless of status pills */
+.status{
+  position:relative !important;
+  display:block !important;
+  width:100% !important;
+}
+.status>div:first-child{
+  width:100% !important;
+  margin:0 auto !important;
+  text-align:center !important;
+}
+.status-pills-wrap{
+  position:absolute !important;
+  top:8px !important;
+  right:8px !important;
+  display:flex !important;
+  gap:8px !important;
+  align-items:center !important;
+}
+.current{
+  width:100% !important;
+  text-align:center !important;
+  margin:0 auto !important;
+}
+
+/* sequence itself always centers to viewport, never to page width */
+.sequence-stage{
+  width:100% !important;
+  max-width:1120px !important;
+  margin-left:auto !important;
+  margin-right:auto !important;
+  overflow:hidden !important;
+}
+.sequence-viewport{
+  width:100% !important;
+  max-width:100% !important;
+  margin:0 auto !important;
+  overflow:hidden !important;
+}
+.sequence-track{
+  left:0 !important;
+  right:auto !important;
+}
+
+/* keyboard remains centered and constrained after viewport resize */
+.keyboard-shell{
+  width:100% !important;
+  max-width:1240px !important;
+  margin-left:auto !important;
+  margin-right:auto !important;
+  box-sizing:border-box !important;
+}
+.krow{
+  width:max-content !important;
+  min-width:100% !important;
+  justify-content:center !important;
+  margin-left:auto !important;
+  margin-right:auto !important;
+}
+
+/* Medium widths: keep note centered, pills move below so they cannot push/cover it */
+@media(max-width:1180px){
+  .status{
+    padding-bottom:38px !important;
+  }
+  .status-pills-wrap{
+    top:auto !important;
+    bottom:2px !important;
+    left:50% !important;
+    right:auto !important;
+    transform:translateX(-50%) !important;
+    justify-content:center !important;
+  }
+}
+
+/* Small screens: guide can wrap as a centered UNIT */
+@media(max-width:720px){
+  .articulation-center-group{
+    display:flex !important;
+    flex-wrap:wrap !important;
+    justify-content:center !important;
+    width:100% !important;
+    gap:6px 8px !important;
+  }
+  #articulationText{
+    white-space:normal !important;
+  }
+  .hold-timer{
+    width:100% !important;
+    text-align:center !important;
+  }
+  .status-pills-wrap{
+    width:max-content !important;
+    max-width:100% !important;
+  }
+}
+
+
+/* ===== Settings scroll + fixed close button ===== */
+#settingsPanel{
+  scrollbar-gutter:stable;
+  overscroll-behavior:contain;
+  scroll-behavior:smooth;
+}
+
+/* Use the panel itself as the only vertical scroller */
+#settingsPanel:not(.collapsed){
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  padding-top:64px !important;
+  padding-right:18px !important;
+}
+
+/* Better native scrollbar */
+#settingsPanel{
+  scrollbar-width:thin;
+  scrollbar-color:rgba(210,220,240,.42) rgba(255,255,255,.045);
+}
+#settingsPanel::-webkit-scrollbar{
+  width:10px;
+}
+#settingsPanel::-webkit-scrollbar-track{
+  background:rgba(255,255,255,.035);
+  border-radius:999px;
+}
+#settingsPanel::-webkit-scrollbar-thumb{
+  background:linear-gradient(180deg,rgba(205,216,236,.46),rgba(145,159,184,.34));
+  border:2px solid rgba(12,17,24,.55);
+  border-radius:999px;
+}
+#settingsPanel::-webkit-scrollbar-thumb:hover{
+  background:linear-gradient(180deg,rgba(225,233,247,.58),rgba(165,180,207,.46));
+}
+
+/* Fixed close button inside the modal viewport */
+.settings-close-fixed{
+  position:fixed !important;
+  top:calc(7vh + 12px) !important;
+  right:calc((100vw - min(1180px, calc(100vw - 40px)))/2 + 12px) !important;
+  z-index:2005 !important;
+
+  width:38px !important;
+  height:38px !important;
+  min-width:38px !important;
+  padding:0 !important;
+
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+
+  border-radius:50% !important;
+  border:1px solid rgba(255,255,255,.16) !important;
+  background:
+    linear-gradient(180deg,rgba(31,38,50,.72),rgba(15,21,30,.64)) !important;
+  color:#f6f8fd !important;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.10),
+    0 8px 24px rgba(0,0,0,.28) !important;
+
+  -webkit-backdrop-filter:blur(18px) saturate(1.06) !important;
+  backdrop-filter:blur(18px) saturate(1.06) !important;
+
+  font-size:18px !important;
+  line-height:1 !important;
+  cursor:pointer;
+  transition:transform .14s ease,background .14s ease,border-color .14s ease !important;
+}
+.settings-close-fixed:hover{
+  transform:scale(1.06);
+  background:
+    linear-gradient(180deg,rgba(48,56,72,.82),rgba(24,31,42,.76)) !important;
+  border-color:rgba(255,255,255,.24) !important;
+}
+.settings-close-fixed:active{
+  transform:scale(.96);
+}
+#settingsPanel.collapsed .settings-close-fixed{
+  opacity:0;
+  pointer-events:none;
+}
+
+/* Make the library section itself not create a second vertical scrollbar */
+#settingsPanel .overlay-library-slot,
+#settingsPanel .overlay-library-slot > aside.panel{
+  overflow:visible !important;
+}
+#settingsPanel .overlay-library-slot .song-list{
+  overflow-x:auto !important;
+  overflow-y:hidden !important;
+  max-height:none !important;
+}
+
+/* Prevent wheel events from scrolling page behind the modal */
+body.settings-open{
+  overflow:hidden !important;
+  height:100vh !important;
+}
+
+/* Slight bottom breathing room in the scroll area */
+#settingsPanel:not(.collapsed)::after{
+  content:"";
+  display:block;
+  height:18px;
+}
+
+@media(max-width:720px){
+  #settingsPanel:not(.collapsed){
+    padding-top:58px !important;
+    padding-right:12px !important;
+  }
+  .settings-close-fixed{
+    top:calc(4vh + 8px) !important;
+    right:16px !important;
+    width:36px !important;
+    height:36px !important;
+    min-width:36px !important;
+  }
+}
+
+
+/* ===== Preserve Roblox Shift-note semantics ===== */
+.current,
+.seq-item,
+.key .cap{
+  font-variant-ligatures:none;
+}
+.shift-note-hint{
+  color:#ffd38a;
+}
+
+
+/* ===== UX polish: forgiving judging / stable small-window layout / close button ===== */
+
+/* Keep status chips at the top-right even on smaller desktop windows */
+@media(max-width:1180px){
+  .status{
+    padding-bottom:0 !important;
+  }
+  .status-pills-wrap{
+    position:absolute !important;
+    top:8px !important;
+    right:8px !important;
+    bottom:auto !important;
+    left:auto !important;
+    transform:none !important;
+    justify-content:flex-end !important;
+  }
+}
+@media(max-width:760px){
+  .status-pills-wrap{
+    top:6px !important;
+    right:6px !important;
+    gap:5px !important;
+  }
+  .status .pill{
+    min-width:58px !important;
+    padding:5px 6px !important;
+    font-size:9px !important;
+  }
+}
+
+/* Close button belongs to the settings panel and stays fixed while panel scrolls */
+.settings-close-fixed{
+  position:sticky !important;
+  top:0 !important;
+  right:auto !important;
+  float:right !important;
+  z-index:2100 !important;
+  margin:-48px 0 10px auto !important;
+  transform:none !important;
+}
+.settings-close-fixed:hover{
+  transform:scale(1.05) !important;
+}
+.settings-close-fixed:active{
+  transform:scale(.96) !important;
+}
+
+/* Articulation badge goes ABOVE the instruction text, centered as one unit */
+.articulation-guide{
+  display:flex !important;
+  justify-content:center !important;
+  align-items:center !important;
+  width:100% !important;
+}
+.articulation-center-group{
+  display:flex !important;
+  flex-direction:column !important;
+  justify-content:center !important;
+  align-items:center !important;
+  width:max-content !important;
+  max-width:100% !important;
+  gap:5px !important;
+  text-align:center !important;
+}
+.articulation-badge{
+  margin:0 auto !important;
+}
+#articulationText{
+  width:100% !important;
+  text-align:center !important;
+  white-space:normal !important;
+}
+.hold-timer{
+  width:100% !important;
+  text-align:center !important;
+  margin-top:1px !important;
+}
+
+/* Give panel enough top room without pushing sticky close into odd positions */
+#settingsPanel:not(.collapsed){
+  padding-top:24px !important;
+}
+
+
+/* ===== Rounded settings frame + inset scroller + outside close button ===== */
+
+/* Outer glass frame never scrolls */
+#settingsPanel,
+#settingsPanel.collapsed,
+#settingsPanel:not(.collapsed){
+  overflow:hidden !important;
+}
+
+/* Inner scroll area */
+.settings-scroll-content{
+  width:100%;
+  height:100%;
+  box-sizing:border-box;
+  overflow-y:auto;
+  overflow-x:hidden;
+  padding:4px 14px 22px 4px;
+  overscroll-behavior:contain;
+  scrollbar-gutter:stable;
+  border-radius:18px;
+}
+
+/* Inset scrollbar so it visually fits inside the rounded glass */
+.settings-scroll-content{
+  scrollbar-width:thin;
+  scrollbar-color:rgba(220,230,248,.38) rgba(255,255,255,.035);
+}
+.settings-scroll-content::-webkit-scrollbar{
+  width:8px;
+}
+.settings-scroll-content::-webkit-scrollbar-track{
+  margin-top:14px;
+  margin-bottom:14px;
+  background:rgba(255,255,255,.035);
+  border-radius:999px;
+}
+.settings-scroll-content::-webkit-scrollbar-thumb{
+  background:linear-gradient(
+    180deg,
+    rgba(223,232,249,.48),
+    rgba(150,164,188,.34)
+  );
+  border-radius:999px;
+  border:2px solid rgba(15,20,28,.38);
+}
+.settings-scroll-content::-webkit-scrollbar-thumb:hover{
+  background:linear-gradient(
+    180deg,
+    rgba(239,244,253,.62),
+    rgba(177,191,216,.48)
+  );
+}
+
+/* The X is no longer inside the panel */
+.settings-close-fixed{
+  position:fixed !important;
+  left:50% !important;
+  right:auto !important;
+  top:auto !important;
+  bottom:calc(7vh - 20px) !important;
+  transform:translateX(-50%) scale(.96) !important;
+
+  width:46px !important;
+  height:46px !important;
+  min-width:46px !important;
+  margin:0 !important;
+  padding:0 !important;
+
+  border-radius:50% !important;
+  z-index:2105 !important;
+
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+
+  background:
+    linear-gradient(180deg,rgba(35,43,56,.86),rgba(15,21,30,.82)) !important;
+  border:1px solid rgba(255,255,255,.18) !important;
+  color:#f8fbff !important;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.11),
+    0 10px 30px rgba(0,0,0,.34),
+    0 0 0 5px rgba(7,11,17,.16) !important;
+
+  -webkit-backdrop-filter:blur(16px) saturate(1.05) !important;
+  backdrop-filter:blur(16px) saturate(1.05) !important;
+
+  opacity:0 !important;
+  visibility:hidden !important;
+  pointer-events:none !important;
+
+  font-size:19px !important;
+  transition:
+    opacity .18s ease,
+    transform .18s ease,
+    background .15s ease !important;
+}
+
+.settings-close-fixed.show{
+  opacity:1 !important;
+  visibility:visible !important;
+  pointer-events:auto !important;
+  transform:translateX(-50%) scale(1) !important;
+}
+
+.settings-close-fixed:hover{
+  transform:translateX(-50%) scale(1.08) !important;
+  background:
+    linear-gradient(180deg,rgba(48,58,74,.92),rgba(23,30,41,.88)) !important;
+}
+.settings-close-fixed:active{
+  transform:translateX(-50%) scale(.95) !important;
+}
+
+/* Restore clean panel padding since scrolling moved inside */
+#settingsPanel:not(.collapsed){
+  padding:18px !important;
+}
+
+/* Space at bottom so content doesn't visually touch frame */
+.settings-scroll-content::after{
+  content:"";
+  display:block;
+  height:12px;
+}
+
+/* Narrow windows */
+@media(max-width:720px){
+  .settings-scroll-content{
+    padding:2px 8px 18px 2px;
+    border-radius:14px;
+  }
+  .settings-close-fixed{
+    bottom:calc(4vh - 18px) !important;
+    width:42px !important;
+    height:42px !important;
+    min-width:42px !important;
+  }
+}
+
+
+/* ===== Settings content priority ===== */
+.overlay-section-title{
+  display:none !important;
+}
+
+.settings-top-group{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-bottom:16px;
+}
+
+.settings-top-group .advanced-mode-row,
+.settings-top-group .case-mode-row{
+  margin:0 !important;
+  min-height:86px;
+}
+
+.settings-audio-group{
+  grid-column:1/-1;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+
+.settings-audio-group .range-wrap{
+  margin:0 !important;
+}
+
+#settingsPanel .overlay-library-slot{
+  margin-top:0 !important;
+}
+
+@media(max-width:820px){
+  .settings-top-group{
+    grid-template-columns:1fr;
+  }
+  .settings-audio-group{
+    grid-column:1;
+    grid-template-columns:1fr;
+  }
+}
+
+
+/* ===== Restore visible upcoming notes ===== */
+.seq-item.future{
+  opacity:.34 !important;
+  color:#8f9db7 !important;
+  filter:none !important;
+}
+.seq-item.future.next-3{
+  opacity:.48 !important;
+  color:#aab6cc !important;
+  transform:scale(.88) !important;
+}
+.seq-item.future.next-2{
+  opacity:.68 !important;
+  color:#c5cee0 !important;
+  transform:scale(.94) !important;
+}
+.seq-item.future.next-1{
+  opacity:.92 !important;
+  color:#edf2ff !important;
+  transform:scale(1.02) !important;
+  text-shadow:
+    0 0 8px rgba(150,166,255,.18),
+    0 0 18px rgba(120,138,255,.10) !important;
+}
+.seq-item.done{
+  opacity:.08 !important;
+}
+.seq-item.done.prev-1{
+  opacity:.26 !important;
+}
+.seq-item.done.prev-2{
+  opacity:.15 !important;
+}
+
+/* keep enough horizontal visual room around the centered current note */
+.sequence-viewport{
+  min-width:0 !important;
+}
+
+
+/* ===== Case toggle + upcoming-note visibility hard fix ===== */
+
+/* Score lane: do not fade the right side so heavily that upcoming notes disappear */
+.sequence-viewport{
+  -webkit-mask-image:linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(0,0,0,.55) 5%,
+    #000 10%,
+    #000 95%,
+    rgba(0,0,0,.70) 98%,
+    transparent 100%
+  ) !important;
+  mask-image:linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(0,0,0,.55) 5%,
+    #000 10%,
+    #000 95%,
+    rgba(0,0,0,.70) 98%,
+    transparent 100%
+  ) !important;
+}
+
+.seq-item{
+  visibility:visible !important;
+  display:block !important;
+  flex:0 0 auto !important;
+  filter:none !important;
+}
+
+.seq-item.current{
+  opacity:1 !important;
+}
+
+.seq-item.future{
+  opacity:.42 !important;
+  color:#9daac2 !important;
+  transform:scale(.88) !important;
+}
+.seq-item.future.next-1{
+  opacity:1 !important;
+  color:#f3f6ff !important;
+  transform:scale(1.04) !important;
+}
+.seq-item.future.next-2{
+  opacity:.78 !important;
+  color:#d5deef !important;
+  transform:scale(.98) !important;
+}
+.seq-item.future.next-3{
+  opacity:.62 !important;
+  color:#bac6db !important;
+  transform:scale(.94) !important;
+}
+.seq-item.future.next-far{
+  opacity:.42 !important;
+  color:#94a2bc !important;
+  transform:scale(.86) !important;
+}
+
+/* Make case changes obvious on the keyboard */
+.key .cap{
+  text-transform:none !important;
+}
+
+
+/* ===== Sequence lane hard visibility + settings button state ===== */
+.sequence-viewport{
+  -webkit-mask-image:none !important;
+  mask-image:none !important;
+  overflow:hidden !important;
+}
+.sequence-track{
+  min-width:max-content !important;
+}
+.seq-item{
+  display:block !important;
+  visibility:visible !important;
+  flex:0 0 auto !important;
+  opacity:.44 !important;
+  color:#9aa8c0 !important;
+  filter:none !important;
+}
+.seq-item.current{
+  opacity:1 !important;
+  color:#ffffff !important;
+  transform:scale(1.10) !important;
+}
+.seq-item.future.next-1{
+  opacity:.96 !important;
+  color:#edf3ff !important;
+  transform:scale(1.00) !important;
+}
+.seq-item.future.next-2{
+  opacity:.78 !important;
+  color:#d0daeb !important;
+  transform:scale(.95) !important;
+}
+.seq-item.future.next-3{
+  opacity:.64 !important;
+  color:#b8c4d9 !important;
+  transform:scale(.91) !important;
+}
+.seq-item.future.next-far{
+  opacity:.44 !important;
+  color:#98a6be !important;
+  transform:scale(.86) !important;
+}
+.seq-item.done.prev-1{
+  opacity:.68 !important;
+  color:#b7c2d5 !important;
+  transform:scale(.92) !important;
+}
+.seq-item.done.prev-2{
+  opacity:.52 !important;
+  color:#9eabc1 !important;
+  transform:scale(.88) !important;
+}
+.seq-item.done.prev-far{
+  opacity:.34 !important;
+  color:#7f8ca4 !important;
+  transform:scale(.82) !important;
+}
+
+/* Settings button should not look active merely because it retains focus */
+.workspace-toggle:focus,
+.workspace-toggle:focus-visible{
+  outline:none !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.08),
+    0 6px 18px rgba(0,0,0,.13) !important;
+}
+.workspace-toggle:not(.open){
+  background:
+    linear-gradient(180deg,rgba(30,37,49,.48),rgba(17,23,32,.40)) !important;
+  border-color:rgba(255,255,255,.13) !important;
+}
+.workspace-toggle.open{
+  background:
+    linear-gradient(180deg,rgba(64,78,101,.62),rgba(31,40,56,.54)) !important;
+  border-color:rgba(190,205,235,.24) !important;
+}
+
+
+/* ===== Tighter sequence spacing ===== */
+.sequence-track{
+  gap:14px !important;
+}
+
+.seq-item{
+  min-width:46px !important;
+  padding:0 2px !important;
+}
+
+.seq-item.current{
+  min-width:78px !important;
+}
+
+@media(max-width:900px){
+  .sequence-track{
+    gap:10px !important;
+  }
+  .seq-item{
+    min-width:40px !important;
+  }
+  .seq-item.current{
+    min-width:66px !important;
+  }
+}
+
+
+/* ===== Sequence notes: place immediate neighbors much closer ===== */
+.sequence-track{
+  gap:2px !important;
+}
+
+.seq-item{
+  min-width:34px !important;
+  width:34px !important;
+  padding:0 !important;
+  margin:0 !important;
+  overflow:visible !important;
+}
+
+.seq-item.current{
+  min-width:54px !important;
+  width:54px !important;
+}
+
+.seq-item.prev-1,
+.seq-item.next-1{
+  margin-left:0 !important;
+  margin-right:0 !important;
+}
+
+@media(max-width:900px){
+  .sequence-track{
+    gap:0 !important;
+  }
+  .seq-item{
+    min-width:31px !important;
+    width:31px !important;
+  }
+  .seq-item.current{
+    min-width:48px !important;
+    width:48px !important;
+  }
+}
+
+
+/* ===== Sequence spacing rebalance: close but never overlapping ===== */
+.sequence-track{
+  gap:8px !important;
+}
+
+.seq-item{
+  min-width:42px !important;
+  width:auto !important;
+  padding:0 3px !important;
+  margin:0 !important;
+  overflow:visible !important;
+  box-sizing:border-box !important;
+}
+
+.seq-item.current{
+  min-width:68px !important;
+  width:auto !important;
+}
+
+/* Immediate neighbors stay close without touching the enlarged current note */
+.seq-item.prev-1{
+  margin-right:2px !important;
+}
+.seq-item.next-1{
+  margin-left:2px !important;
+}
+
+@media(max-width:900px){
+  .sequence-track{
+    gap:6px !important;
+  }
+  .seq-item{
+    min-width:38px !important;
+    padding:0 2px !important;
+  }
+  .seq-item.current{
+    min-width:60px !important;
+  }
+}
+
+
+/* ===== Hard-close settings overlay: never leave invisible clickable UI ===== */
+
+/* CLOSED STATE */
+body:not(.settings-open) #settingsPanel,
+body:not(.settings-open) #settingsBackdrop,
+body:not(.settings-open) #settingsCloseFixed{
+  display:none !important;
+  visibility:hidden !important;
+  opacity:0 !important;
+  pointer-events:none !important;
+}
+
+/* OPEN STATE */
+body.settings-open #settingsPanel{
+  display:block !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  pointer-events:auto !important;
+}
+
+body.settings-open #settingsBackdrop{
+  display:block !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  pointer-events:auto !important;
+}
+
+body.settings-open #settingsCloseFixed{
+  display:flex !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  pointer-events:auto !important;
+}
+
+/* The toggle itself should only have an active look when the overlay truly exists */
+body:not(.settings-open) #workspaceToggle{
+  pointer-events:auto !important;
+}
+body:not(.settings-open) #workspaceToggle.open{
+  background:
+    linear-gradient(180deg,rgba(30,37,49,.48),rgba(17,23,32,.40)) !important;
+  border-color:rgba(255,255,255,.13) !important;
+}
+
+/* Keyboard case display is literal; never CSS-uppercase it */
+.key .cap{
+  text-transform:none !important;
+}
+
 </style>
 </head>
 <body>
+<div id="settingsBackdrop" class="settings-backdrop"></div>
 <div class="fx-bg" aria-hidden="true">
   <div class="fx-layer fx-back"></div>
   <div class="fx-layer fx-mid"></div>
@@ -1787,6 +3212,32 @@ body{
       </div>
 
       <div id="settingsPanel" class="settings-panel collapsed">
+        <button id="settingsCloseFixed" class="settings-close-fixed" type="button" aria-label="설정 닫기" title="설정 닫기">
+          <span>✕</span>
+        </button>
+                <div id="overlayLibrarySlot" class="overlay-library-slot"></div>
+        <div class="advanced-mode-row">
+          <div>
+            <div class="advanced-title">🎼 연습 난이도</div>
+            <div class="advanced-desc" id="practiceModeDesc">초급 연습: 음과 화음 위주로 진행합니다.</div>
+          </div>
+          <div class="practice-mode-segment" role="group" aria-label="연습 난이도">
+            <button id="beginnerModeBtn" type="button" class="mode-btn active">초급 연습</button>
+            <button id="advancedModeBtn" type="button" class="mode-btn">고급 연습</button>
+          </div>
+          <input id="advancedMode" type="checkbox" hidden>
+        </div>
+
+        <div class="case-mode-row">
+          <div>
+            <div class="advanced-title">🔤 키 표기</div>
+            <div class="advanced-desc">표시만 바뀌며 실제 음정과 판정은 그대로 유지됩니다.</div>
+          </div>
+          <div class="practice-mode-segment" role="group" aria-label="키 표기 방식">
+            <button id="lowercaseModeBtn" type="button" class="mode-btn active">소문자</button>
+            <button id="uppercaseModeBtn" type="button" class="mode-btn">대문자</button>
+          </div>
+        </div>
       <div class="grid2">
         <div>
           <label>곡 제목</label>
@@ -1855,9 +3306,11 @@ body{
           <div class="small">현재 음</div>
           <div id="current" class="current">—</div>
         </div>
-        <div class="pill">진행<br><b id="count">0 / 0</b></div>
-        <div class="pill">상태<br><b id="status">대기</b></div>
-        <div class="pill">BPM<br><b id="bpmView">120</b></div>
+        <div class="status-pills-wrap">
+          <div class="pill">진행<br><b id="count">0 / 0</b></div>
+          <div class="pill">상태<br><b id="status">대기</b></div>
+          <div class="pill">BPM<br><b id="bpmView">120</b></div>
+        </div>
       </div>
 
       <div class="progress"><div id="progress"></div></div>
@@ -1868,6 +3321,13 @@ body{
           <div class="sequence-track" id="sequenceTrack"></div>
         </div>
         <div class="sequence-marker"></div>
+        <div id="articulationGuide" class="articulation-guide">
+          <div class="articulation-center-group">
+            <span id="articulationBadge" class="articulation-badge">기본</span>
+            <span id="articulationText">현재 강조된 키를 입력하세요.</span>
+            <span id="holdTimer" class="hold-timer"></span>
+          </div>
+        </div>
         <div id="practiceFeedback" class="practice-feedback">직접 연주하면 악보가 진행됩니다.</div>
       </div>
 
@@ -1954,17 +3414,17 @@ const $=s=>document.querySelector(s);
 const E={
  search:$('#search'),newSong:$('#newSong'),importTxt:$('#importTxt'),exportAll:$('#exportAll'),fileInput:$('#fileInput'),
  songList:$('#songList'),title:$('#title'),category:$('#category'),sheet:$('#sheet'),bpm:$('#bpm'),unit:$('#unit'),volume:$('#volume'),volumeValue:$('#volumeValue'),reverb:$('#reverb'),reverbValue:$('#reverbValue'),
- workspaceToggle:$('#workspaceToggle'),settingsPanel:$('#settingsPanel'),
+ workspaceToggle:$('#workspaceToggle'),settingsPanel:$('#settingsPanel'),overlayLibrarySlot:$('#overlayLibrarySlot'),settingsBackdrop:$('#settingsBackdrop'),settingsCloseFixed:$('#settingsCloseFixed'),advancedMode:$('#advancedMode'),beginnerModeBtn:$('#beginnerModeBtn'),advancedModeBtn:$('#advancedModeBtn'),practiceModeDesc:$('#practiceModeDesc'),lowercaseModeBtn:$('#lowercaseModeBtn'),uppercaseModeBtn:$('#uppercaseModeBtn'),
  songModal:$('#songModal'),modalSongTitle:$('#modalSongTitle'),modalSongCategory:$('#modalSongCategory'),
  modalSongBpm:$('#modalSongBpm'),modalSongUnit:$('#modalSongUnit'),modalSongSheet:$('#modalSongSheet'),
  cancelSongModal:$('#cancelSongModal'),saveSongModal:$('#saveSongModal'),
- sequenceViewport:$('#sequenceViewport'),sequenceTrack:$('#sequenceTrack'),practiceFeedback:$('#practiceFeedback'),
+ sequenceViewport:$('#sequenceViewport'),sequenceTrack:$('#sequenceTrack'),practiceFeedback:$('#practiceFeedback'),articulationGuide:$('#articulationGuide'),articulationBadge:$('#articulationBadge'),articulationText:$('#articulationText'),holdTimer:$('#holdTimer'),
  saveSong:$('#saveSong'),saveTxt:$('#saveTxt'),deleteSong:$('#deleteSong'),current:$('#current'),count:$('#count'),
  status:$('#status'),bpmView:$('#bpmView'),progress:$('#progress'),play:$('#play'),pause:$('#pause'),stop:$('#stop'),
  slower:$('#slower'),faster:$('#faster'),nextNote:$('#nextNote'),held:$('#held'),selectedSong:$('#selectedSong'),keyboard:$('#keyboard')
 };
 
-let songs=[],localSongs=[],builtinSongs=[],selectedId=null,seq=[],idx=0,playing=false,timer=null,practiceMatched=new Set(),advanceLock=false;
+let songs=[],localSongs=[],builtinSongs=[],selectedId=null,seq=[],scoreSeq=[],idx=0,playing=false,timer=null,practiceMatched=new Set(),advanceLock=false,practiceOrderPos=0,holdStart=0,holdKey=null,displayUppercase=false,holdTimerRaf=0;
 let ac=null,master=null,dryGain=null,wetGain=null,convolver=null,buffers=new Map(),voices=new Map(),pressed=new Set(),keyEls=new Map();
 
 function uid(){return 's_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,8)}
@@ -2267,7 +3727,7 @@ async function getBuffer(note){
  if(!sf||!sf[note])throw new Error('SoundFont 음원을 찾지 못했습니다: '+note);
  const r=await fetch(sf[note]);const arr=await r.arrayBuffer();const b=await ac.decodeAudioData(arr.slice(0));buffers.set(note,b);return b;
 }
-async function noteOn(key,durationMs=null){
+async function noteOn(key,durationMs=null,cutAudio=false){
  if(!KEY_TO_NOTE[key])return;
  try{
    const b=await getBuffer(KEY_TO_NOTE[key]);
@@ -2277,12 +3737,10 @@ async function noteOn(key,durationMs=null){
    g.connect(dryGain);
    g.connect(convolver);
 
-   // Keep the SoundFont sample itself intact. No artificial note-shortening envelope.
    const n=ac.currentTime;
    g.gain.setValueAtTime(1,n);
 
-   // 같은 키를 다시 눌러도 기존 잔향을 끊지 않고 겹쳐 울리게 한다.
-   if(!voices.has(key)) voices.set(key,new Set());
+   if(!voices.has(key))voices.set(key,new Set());
    const voice={src,g};
    voices.get(key).add(voice);
 
@@ -2290,22 +3748,28 @@ async function noteOn(key,durationMs=null){
    keyEls.get(key)?.classList.add('active');
    updateHeld();
 
-   // 원본 OGG 샘플은 끝날 때까지 자연스럽게 재생한다.
-   // durationMs는 키 하이라이트/악보 타이밍에만 사용하고 오디오는 자르지 않는다.
    if(durationMs){
      setTimeout(()=>{
-       if(!pressed.has(key)) keyEls.get(key)?.classList.remove('active');
+       if(!pressed.has(key))keyEls.get(key)?.classList.remove('active');
        updateHeld();
      },Math.max(40,durationMs));
+   }
+
+   // Playback articulation: when requested, fade the sample at the exact gate length.
+   if(cutAudio && durationMs){
+     const end=n+Math.max(.04,durationMs/1000);
+     g.gain.setValueAtTime(1,Math.max(n,end-.035));
+     g.gain.linearRampToValueAtTime(0.0001,end);
+     try{src.stop(end+.02)}catch{}
    }
 
    src.onended=()=>{
      const set=voices.get(key);
      if(set){
        set.delete(voice);
-       if(set.size===0) voices.delete(key);
+       if(set.size===0)voices.delete(key);
      }
-     if(!pressed.has(key)) keyEls.get(key)?.classList.remove('active');
+     if(!pressed.has(key))keyEls.get(key)?.classList.remove('active');
      updateHeld();
    };
  }catch(err){
@@ -2342,111 +3806,420 @@ function releaseAll(){
 }
 
 function updateHeld(){
- const keys=[...pressed].map(k=>k.toUpperCase());
+ const keys=[...pressed].map(k=>displayKey(k));
  E.held.textContent=keys.length?keys.join(' + '):'—';
 }
 
 function buildKeyboard(){
+ E.keyboard.innerHTML='';
+ keyEls.clear();
+
  rows.forEach(row=>{
-   const r=document.createElement('div');r.className='krow';
+   const r=document.createElement('div');
+   r.className='krow';
+
    row.forEach(([cap,cls])=>{
-     const k=document.createElement('div');k.className='key '+cls;
-     const top=document.createElement('div');top.textContent=cap.toUpperCase();k.appendChild(top);
+     const k=document.createElement('div');
+     k.className='key '+cls;
+
+     const top=document.createElement('div');
+     top.className='cap';
+     top.textContent=KEY_TO_NOTE[cap] ? displayKey(cap) : cap;
+     k.appendChild(top);
+
      if(KEY_TO_NOTE[cap]){
-       const n=document.createElement('div');n.className='note';n.textContent=KEY_TO_NOTE[cap];k.appendChild(n);keyEls.set(cap,k);
-       k.addEventListener('pointerdown',()=>manualDown(cap));k.addEventListener('pointerup',()=>manualUp(cap));k.addEventListener('pointercancel',()=>manualUp(cap));
+       const n=document.createElement('div');
+       n.className='note';
+       n.textContent=KEY_TO_NOTE[cap];
+       k.appendChild(n);
+
+       keyEls.set(cap,k);
+       k.addEventListener('pointerdown',()=>manualDown(cap));
+       k.addEventListener('pointerup',()=>manualUp(cap));
+       k.addEventListener('pointercancel',()=>manualUp(cap));
+       k.addEventListener('pointerleave',e=>{
+         if(e.buttons)manualUp(cap);
+       });
      }
+
      r.appendChild(k);
    });
+
    E.keyboard.appendChild(r);
  });
 }
 function parseSheet(){
- const text=E.sheet.value.replace(/\n/g,' ');
- // Supported Roblox keys, including shifted black-note aliases.
+ const text=E.sheet.value.replace(/\r/g,'').replace(/\n/g,' ');
  const validChars="1234567890qwertyuiopasdfghjklzxcvbnm!@$%^*(QWETYIOPSDGHJLZCVB";
- const esc=s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
- const charClass=esc(validChars);
- const rx=new RegExp('\\[(['+charClass+']+)\\](?:-+)?|['+charClass+'](?:-+)?','g');
- const raw=text.match(rx)||[];
- seq=raw.map(t=>{
-   const chord=t.startsWith('[');
-   const d=(t.match(/-/g)||[]).length;
-   const inside=chord?t.slice(1,t.indexOf(']')):t[0];
-   return{raw:t,keys:[...inside].filter(k=>KEY_TO_NOTE[k]),beats:1+d*.5};
- }).filter(x=>x.keys.length);
+ const isKey=c=>validChars.includes(c)&&!!KEY_TO_NOTE[c];
+ scoreSeq=[];
+
+ let i=0;
+ while(i<text.length){
+   if(/\s/.test(text[i])){i++;continue}
+
+   // [qwer] = chord / [q w e r] = arpeggio
+   if(text[i]==='['){
+     const end=text.indexOf(']',i+1);
+     if(end!==-1){
+       const raw=text.slice(i,end+1);
+       const inside=text.slice(i+1,end);
+       const keys=[...inside].filter(isKey);
+       if(keys.length){
+         scoreSeq.push({
+           raw,
+           keys,
+           beats:1,
+           type:/\s/.test(inside)?'arpeggio':'chord',
+           gate:/\s/.test(inside)?.42:.88
+         });
+       }
+       i=end+1;
+       continue;
+     }
+   }
+
+   if(isKey(text[i])){
+     let run='';
+     while(i<text.length && isKey(text[i])){
+       run+=text[i];
+       i++;
+     }
+
+     if(run.length>1){
+       scoreSeq.push({
+         raw:run,
+         keys:[...run],
+         beats:1,
+         type:'legato',
+         gate:1.08
+       });
+       continue;
+     }
+
+     const key=run[0];
+
+     if(text.slice(i,i+2)==='--'){
+       scoreSeq.push({
+         raw:key+'--',
+         keys:[key],
+         beats:2,
+         type:'fermata',
+         gate:1.0,
+         requiredHoldBeats:1.38
+       });
+       i+=2;
+       continue;
+     }
+
+     if(text[i]==='-' && isKey(text[i+1])){
+       scoreSeq.push({
+         raw:key+'-',
+         keys:[key],
+         beats:1,
+         type:'tenuto',
+         gate:.96,
+         requiredHoldBeats:.72
+       });
+       i+=1;
+       continue;
+     }
+
+     let j=i;
+     while(j<text.length && /\s/.test(text[j]))j++;
+     if(text[j]==='-'){
+       let k=j+1;
+       while(k<text.length && /\s/.test(text[k]))k++;
+       if(k>j+1 && isKey(text[k])){
+         scoreSeq.push({
+           raw:key+' -',
+           keys:[key],
+           beats:1.5,
+           type:'dotted',
+           gate:.98,
+           requiredHoldBeats:1.12
+         });
+         i=k;
+         continue;
+       }
+     }
+
+     scoreSeq.push({
+       raw:key,
+       keys:[key],
+       beats:1,
+       type:'staccato',
+       gate:.50
+     });
+     continue;
+   }
+
+   i++;
+ }
+
+ // Practice sequence differs by difficulty.
+ // Beginner ignores all articulation except true chords.
+ if(E.advancedMode?.checked){
+   seq=scoreSeq.map(x=>({...x}));
+ }else{
+   seq=[];
+   for(const x of scoreSeq){
+     if(x.type==='chord'){
+       seq.push({...x});
+     }else if(x.type==='legato' || x.type==='arpeggio'){
+       // Flatten phrases into plain single-note practice steps.
+       x.keys.forEach(k=>seq.push({
+         raw:k,
+         keys:[k],
+         beats:1,
+         type:'basic',
+         sourceType:x.type
+       }));
+     }else{
+       // staccato / tenuto / dotted / fermata become plain note checks.
+       seq.push({
+         raw:x.keys[0],
+         keys:[x.keys[0]],
+         beats:1,
+         type:'basic',
+         sourceType:x.type
+       });
+     }
+   }
+ }
+
  if(idx>=seq.length)idx=0;
  practiceMatched.clear();
+ practiceOrderPos=0;
+ holdStart=0;
+ holdKey=null;
+ stopHoldTimer();
  if(E.sequenceTrack)E.sequenceTrack.dataset.signature='';
  render();
 }
+
+function centerSequenceTrack(animate=true){
+ if(!E.sequenceTrack || !E.sequenceViewport)return;
+
+ const current=E.sequenceTrack.querySelector('.seq-item.current');
+ if(!current)return;
+
+ const viewportWidth=E.sequenceViewport.getBoundingClientRect().width;
+ if(!viewportWidth)return;
+
+ const currentCenter=current.offsetLeft+(current.offsetWidth/2);
+ const target=(viewportWidth/2)-currentCenter;
+
+ E.sequenceTrack.style.transition=animate
+   ? 'transform .42s cubic-bezier(.22,.61,.36,1)'
+   : 'none';
+ E.sequenceTrack.style.transform=`translate3d(${Math.round(target)}px,0,0)`;
+}
+
 function renderSequence(){
  if(!E.sequenceTrack || !E.sequenceViewport)return;
 
- const signature=seq.map(x=>x.raw).join('\u0001');
+ E.sequenceTrack.innerHTML='';
 
- // Build the note lane only when the song/score actually changes.
- if(E.sequenceTrack.dataset.signature!==signature){
-   E.sequenceTrack.dataset.signature=signature;
-   E.sequenceTrack.innerHTML='';
-
-   if(!seq.length){
-     const empty=document.createElement('div');
-     empty.className='seq-item current';
-     empty.textContent='—';
-     empty.dataset.index='0';
-     E.sequenceTrack.appendChild(empty);
-   }else{
-     seq.forEach((s,i)=>{
-       const item=document.createElement('div');
-       item.className='seq-item future';
-       item.dataset.index=String(i);
-       item.textContent=s.raw.toUpperCase();
-       E.sequenceTrack.appendChild(item);
-     });
-   }
-
-   // First positioning should not animate in from the far left.
-   E.sequenceTrack.style.transition='none';
+ if(!seq.length){
+   const empty=document.createElement('div');
+   empty.className='seq-item current';
+   empty.textContent='—';
+   E.sequenceTrack.appendChild(empty);
+   requestAnimationFrame(()=>centerSequenceTrack(false));
+   return;
  }
 
- const items=[...E.sequenceTrack.children];
+ // Always keep a visible neighborhood around the current note.
+ const start=Math.max(0,idx-6);
+ const end=Math.min(seq.length,idx+9);
 
- items.forEach((item,i)=>{
-   item.classList.remove('current','near','done','future');
-   const distance=Math.abs(i-idx);
+ for(let i=start;i<end;i++){
+   const s=seq[i];
+   const item=document.createElement('div');
+   item.className='seq-item';
+   item.dataset.index=String(i);
+   item.textContent=displayRaw(s.raw);
 
-   if(!seq.length){
+   if(i===idx){
      item.classList.add('current');
-   }else if(i===idx){
-     item.classList.add('current');
+   }else if(i<idx){
+     item.classList.add('done');
+     const d=idx-i;
+     if(d===1)item.classList.add('prev-1');
+     else if(d===2)item.classList.add('prev-2');
+     else item.classList.add('prev-far');
    }else{
-     if(i<idx)item.classList.add('done');
-     if(i>idx)item.classList.add('future');
-     if(distance<=2)item.classList.add('near');
+     item.classList.add('future');
+     const d=i-idx;
+     if(d===1)item.classList.add('next-1');
+     else if(d===2)item.classList.add('next-2');
+     else if(d===3)item.classList.add('next-3');
+     else item.classList.add('next-far');
    }
- });
 
+   E.sequenceTrack.appendChild(item);
+ }
+
+ // Position immediately, then allow the next step to animate.
+ E.sequenceTrack.style.transition='none';
  requestAnimationFrame(()=>{
-   const current=E.sequenceTrack.querySelector('.seq-item.current');
-   if(!current)return;
-
-   const viewportCenter=E.sequenceViewport.clientWidth/2;
-   const currentCenter=current.offsetLeft+current.offsetWidth/2;
-   const target=viewportCenter-currentCenter;
-
+   centerSequenceTrack(false);
    requestAnimationFrame(()=>{
      E.sequenceTrack.style.transition='transform .42s cubic-bezier(.22,.61,.36,1)';
-     E.sequenceTrack.style.transform=`translate3d(${target}px,0,0)`;
    });
  });
+}
+
+
+function isShiftedLetterNote(k){
+ return typeof k==='string' && /^[A-Z]$/.test(k) && !!KEY_TO_NOTE[k];
+}
+function displayKey(k){
+ if(typeof k!=='string')return k;
+
+ // In Roblox piano, uppercase letters are NOT merely visual uppercase:
+ // they mean Shift+letter (a different semitone).
+ if(/^[A-Za-z]$/.test(k)){
+   const base=k.toLowerCase();
+   const shown=displayUppercase?base.toUpperCase():base;
+   return isShiftedLetterNote(k)?`⇧${shown}`:shown;
+ }
+
+ // Shift-number symbols already visually identify themselves (! @ $ etc.)
+ return k;
+}
+function displayRaw(raw){
+ return [...String(raw)].map(ch=>{
+   if(KEY_TO_NOTE[ch])return displayKey(ch);
+   return ch;
+ }).join('');
+}
+function refreshKeyboardLabels(){
+ keyEls.forEach((el,k)=>{
+   let cap=el.querySelector('.cap');
+   if(!cap){
+     cap=el.firstElementChild;
+     if(cap)cap.classList.add('cap');
+   }
+   if(cap)cap.textContent=displayKey(k);
+ });
+}
+function setKeyDisplayMode(upper,save=true){
+ displayUppercase=!!upper;
+ E.lowercaseModeBtn?.classList.toggle('active',!displayUppercase);
+ E.uppercaseModeBtn?.classList.toggle('active',displayUppercase);
+
+ if(save){
+   localStorage.setItem('robloxPianoDisplayUppercase',displayUppercase?'1':'0');
+ }
+
+ // Keyboard labels
+ refreshKeyboardLabels();
+
+ // Force the flowing score to rebuild, because raw score data itself did not change.
+ if(E.sequenceTrack){
+   E.sequenceTrack.dataset.signature='';
+ }
+ render();
+ updateHeld();
+}
+
+const ARTICULATION_COPY={
+  chord:{label:'화음',text:'해당 음을 한번에 입력하세요'},
+  arpeggio:{label:'아르페지오',text:'음을 빠르게 하나씩 입력하세요'},
+  legato:{label:'레가토',text:'각 음을 부드럽게 연결하세요'},
+  staccato:{label:'스타카토',text:'짧고 분리되도록 입력하세요'},
+  tenuto:{label:'테누토',text:'음을 충분히 길게 유지하세요'},
+  dotted:{label:'점음표',text:'음을 살짝만 더 유지하세요'},
+  fermata:{label:'페르마타',text:'일반적인 길이보다 길게 유지하세요'},
+  basic:{label:'기본',text:'현재 강조된 키를 입력하세요'}
+};
+
+function articulationInfo(item){
+  return ARTICULATION_COPY[item?.type] || ARTICULATION_COPY.basic;
+}
+
+function requiredHoldMs(item){
+  if(!item)return 0;
+  const beat=(60000/(parseInt(E.bpm.value)||120))*(parseFloat(E.unit.value)||1);
+  return beat*(item.requiredHoldBeats||0);
+}
+
+function stopHoldTimer(){
+  cancelAnimationFrame(holdTimerRaf);
+  holdTimerRaf=0;
+  if(E.holdTimer)E.holdTimer.textContent='';
+}
+
+function startHoldTimer(item){
+  stopHoldTimer();
+  const need=requiredHoldMs(item);
+  if(!need || !E.holdTimer)return;
+
+  const started=holdStart||performance.now();
+
+  const tick=()=>{
+    if(!holdStart || !holdKey || idx>=seq.length){
+      stopHoldTimer();
+      return;
+    }
+
+    const elapsed=performance.now()-started;
+    const remain=Math.max(0,need-elapsed);
+
+    E.holdTimer.textContent=
+      remain>0
+        ? `${(remain/1000).toFixed(1)}초 더`
+        : `✓ ${(elapsed/1000).toFixed(1)}초`;
+
+    E.holdTimer.classList.toggle('done',remain<=0);
+    holdTimerRaf=requestAnimationFrame(tick);
+  };
+
+  tick();
+}
+
+function updateArticulationGuide(){
+ if(!E.articulationGuide)return;
+ const item=seq[idx];
+
+ if(!item){
+   E.articulationBadge.textContent='완료';
+   E.articulationText.textContent='연습할 음이 없습니다.';
+   E.holdTimer.textContent='';
+   return;
+ }
+
+ if(!E.advancedMode?.checked){
+   if(item.type==='chord'){
+     E.articulationBadge.textContent='화음';
+     E.articulationText.textContent='해당 음을 한번에 입력하세요';
+   }else{
+     E.articulationBadge.textContent='초급';
+     E.articulationText.textContent='현재 강조된 키를 눌러 진행하세요';
+   }
+   E.holdTimer.textContent='';
+   return;
+ }
+
+ const info=articulationInfo(item);
+ E.articulationBadge.textContent=info.label;
+ E.articulationText.textContent=info.text;
+
+ const holdMs=requiredHoldMs(item);
+ if(holdMs>0){
+   E.holdTimer.textContent=`약 ${(holdMs/1000).toFixed(1)}초 유지`;
+ }else{
+   E.holdTimer.textContent='';
+ }
 }
 
 function render(){
  keyEls.forEach(el=>el.classList.remove('target'));const x=seq[idx];
  if(x){
-   E.current.textContent=x.raw.toUpperCase();
-   E.nextNote.textContent=seq[idx+1]?.raw.toUpperCase()||'끝';
+   E.current.textContent=displayRaw(x.raw);
+   E.nextNote.textContent=seq[idx+1]?displayRaw(seq[idx+1].raw):'끝';
    x.keys.forEach(k=>keyEls.get(k)?.classList.add('target'));
    E.current.classList.remove('pulse');
    void E.current.offsetWidth;
@@ -2458,15 +4231,66 @@ function render(){
  }
  E.count.textContent=`${seq.length?Math.min(idx+1,seq.length):0} / ${seq.length}`;
  E.progress.style.width=(seq.length?Math.min(100,idx/seq.length*100):0)+'%';
+ updateArticulationGuide();
  renderSequence();
  clampBpm();
 }
-function stepMs(x){return (60000/clampBpm())*(parseFloat(E.unit.value)||1)*x.beats}
+function stepMs(x){return (60000/clampBpm(true))*(parseFloat(E.unit.value)||1)*x.beats}
 function playStep(){
- clearTimeout(timer);if(!playing||!seq.length)return;
- if(idx>=seq.length){playing=false;releaseAll();E.status.textContent='완료';E.progress.style.width='100%';return}
- render();const x=seq[idx],ms=Math.max(70,stepMs(x));E.status.textContent='재생 중';
- x.keys.forEach(k=>noteOn(k,ms*.92));timer=setTimeout(()=>{x.keys.forEach(k=>{if(!pressed.has(k))keyEls.get(k)?.classList.remove('active')});idx++;practiceMatched.clear();playStep()},ms);
+ clearTimeout(timer);
+ if(!playing||!scoreSeq.length)return;
+ if(idx>=scoreSeq.length){
+   playing=false;
+   releaseAll();
+   E.status.textContent='완료';
+   E.progress.style.width='100%';
+   return;
+ }
+
+ const x=scoreSeq[idx];
+ // During autoplay, render using the score sequence so notation stays exact.
+ const practiceSeqBackup=seq;
+ seq=scoreSeq;
+ render();
+ seq=practiceSeqBackup;
+
+ const ms=Math.max(70,stepMs(x));
+ E.status.textContent='재생 중';
+
+ if(x.type==='arpeggio'){
+   const gap=Math.min(110,Math.max(42,ms/(x.keys.length*3.4)));
+   const noteLen=Math.max(80,gap*1.05);
+   x.keys.forEach((k,n)=>{
+     setTimeout(()=>{
+       if(playing)noteOn(k,noteLen,true);
+     },n*gap);
+   });
+ }else if(x.type==='legato'){
+   const gap=Math.max(55,ms/x.keys.length);
+   const noteLen=Math.max(90,gap*1.22);
+   x.keys.forEach((k,n)=>{
+     setTimeout(()=>{
+       if(playing)noteOn(k,noteLen,true);
+     },n*gap);
+   });
+ }else{
+   const gate=Number.isFinite(x.gate)?x.gate:.9;
+   const noteLen=Math.max(55,ms*gate);
+   x.keys.forEach(k=>noteOn(k,noteLen,true));
+ }
+
+ timer=setTimeout(()=>{
+   x.keys.forEach(k=>{
+     if(!pressed.has(k))keyEls.get(k)?.classList.remove('active');
+   });
+   idx++;
+   practiceMatched.clear();
+   practiceOrderPos=0;
+   holdStart=0;
+   holdKey=null;
+   stopHoldTimer();
+   playStep();
+ },ms);
 }
 function stopPlayback(reset=true){playing=false;clearTimeout(timer);releaseAll();if(reset){idx=0;practiceMatched.clear();}render();E.status.textContent=reset?'정지':'대기';if(reset)setPracticeFeedback('현재 강조된 키를 눌러 진행하세요.');}
 
@@ -2486,6 +4310,9 @@ function advancePracticeStep(){
 
  idx++;
  practiceMatched.clear();
+ practiceOrderPos=0;
+ holdStart=0;
+ holdKey=null;
 
  if(idx>=seq.length){
    idx=seq.length;
@@ -2510,52 +4337,138 @@ function advancePracticeStep(){
  },180);
 }
 
+function wrongPracticeKey(k,msg=null){
+ setPracticeFeedback(msg||`${displayKey(k)} · 다른 키예요`,'bad');
+ const wrongKey=keyEls.get(k);
+ if(wrongKey){
+   wrongKey.classList.remove('wrong');
+   void wrongKey.offsetWidth;
+   wrongKey.classList.add('wrong');
+   setTimeout(()=>wrongKey.classList.remove('wrong'),320);
+ }
+ E.current.classList.remove('wrong');
+ void E.current.offsetWidth;
+ E.current.classList.add('wrong');
+ setTimeout(()=>{
+   E.current.classList.remove('wrong');
+   if(!playing)setPracticeFeedback('현재 강조된 키를 눌러 진행하세요.');
+ },420);
+}
+
 function judgePracticeKey(k){
  if(playing || advanceLock || !seq.length || idx>=seq.length)return;
-
  const item=seq[idx];
  if(!item)return;
 
- if(!item.keys.includes(k)){
-   setPracticeFeedback(`${k.toUpperCase()} · 다른 키예요`,'bad');
+ const advanced=!!E.advancedMode?.checked;
 
-   const wrongKey=keyEls.get(k);
-   if(wrongKey){
-     wrongKey.classList.remove('wrong');
-     void wrongKey.offsetWidth;
-     wrongKey.classList.add('wrong');
-     setTimeout(()=>wrongKey.classList.remove('wrong'),320);
+ // Beginner: only note/chord correctness matters.
+ if(!advanced){
+   if(!item.keys.includes(k)){wrongPracticeKey(k);return}
+
+   // Even arpeggio/legato become simple ordered note practice in beginner mode.
+   if(item.keys.length===1){
+     advancePracticeStep();
+     return;
    }
 
-   E.current.classList.remove('wrong');
-   void E.current.offsetWidth;
-   E.current.classList.add('wrong');
-
-   setTimeout(()=>{
-     E.current.classList.remove('wrong');
-     if(!playing) setPracticeFeedback('현재 강조된 키를 눌러 진행하세요.');
-   },420);
+   practiceMatched.add(k);
+   const remaining=item.keys.filter(x=>!practiceMatched.has(x));
+   if(!remaining.length){
+     advancePracticeStep();
+   }else{
+     setPracticeFeedback(`화음 · ${remaining.map(displayKey).join(' + ')} 같이 눌러주세요`,'chord');
+   }
    return;
  }
 
- practiceMatched.add(k);
+ // ADVANCED — chord must land within 180 ms.
+ if(item.type==='chord'){
+   if(!item.keys.includes(k)){wrongPracticeKey(k);return}
+   const now=performance.now();
 
- // Single note: advance immediately.
- if(item.keys.length===1){
-   advancePracticeStep();
+   if(practiceMatched.size===0){
+     holdStart=now;
+   }else if(now-holdStart>340){
+     practiceMatched.clear();
+     holdStart=now;
+   }
+
+   practiceMatched.add(k);
+   const remaining=item.keys.filter(x=>!practiceMatched.has(x));
+
+   if(!remaining.length){
+     if(now-holdStart<=340){
+       advancePracticeStep();
+     }else{
+       practiceMatched.clear();
+       wrongPracticeKey(k,'화음은 더 동시에 눌러주세요');
+     }
+   }else{
+     setPracticeFeedback(`화음 · ${remaining.map(displayKey).join(' + ')} 같이`,'chord');
+   }
    return;
  }
 
- // Chord: accept keys in any order and advance after all required notes were pressed.
- const remaining=item.keys.filter(x=>!practiceMatched.has(x));
- if(remaining.length===0){
-   advancePracticeStep();
- }else{
-   setPracticeFeedback(
-     `화음 ${practiceMatched.size}/${item.keys.length} · ${remaining.map(x=>x.toUpperCase()).join(' + ')} 남음`,
-     'chord'
-   );
+ // ADVANCED — arpeggio/legato require exact order.
+ if(item.type==='arpeggio' || item.type==='legato'){
+   const expected=item.keys[practiceOrderPos];
+   if(k!==expected){
+     wrongPracticeKey(k,`${k.toUpperCase()} · 순서가 달라요 · ${displayKey(expected)} 차례`);
+     return;
+   }
+
+   // Timing windows: arpeggio fast, legato moderate.
+   const now=performance.now();
+   if(practiceOrderPos===0){
+     holdStart=now;
+   }else{
+     const elapsed=now-holdStart;
+     const beat=(60000/(parseInt(E.bpm.value)||120))*(parseFloat(E.unit.value)||1);
+     const maxElapsed=item.type==='arpeggio'
+       ? Math.min(1100,beat*1.05)
+       : beat*1.55;
+
+     if(elapsed>maxElapsed){
+       practiceOrderPos=0;
+       holdStart=0;
+       wrongPracticeKey(k,item.type==='arpeggio'?'아르페지오가 너무 느려요':'레가토 연결이 너무 늦어요');
+       return;
+     }
+   }
+
+   practiceOrderPos++;
+   if(practiceOrderPos>=item.keys.length){
+     advancePracticeStep();
+   }else{
+     setPracticeFeedback(
+       `${item.type==='arpeggio'?'아르페지오':'레가토'} ${practiceOrderPos}/${item.keys.length} · ${displayKey(item.keys[practiceOrderPos])}`,
+       'chord'
+     );
+   }
+   return;
  }
+
+ if(!item.keys.includes(k)){wrongPracticeKey(k);return}
+
+ // ADVANCED — duration marks MUST be held until release.
+ if(['tenuto','dotted','fermata'].includes(item.type)){
+   holdKey=k;
+   holdStart=performance.now();
+   startHoldTimer(item);
+
+   const label=item.type==='tenuto'
+     ?'테누토 · 길이 유지 중'
+     :item.type==='dotted'
+       ?'점음표 · 1.5배 길이 유지 중'
+       :'페르마타 · 충분히 길게 유지 중';
+
+   setPracticeFeedback(label,'chord');
+   return;
+ }
+
+ // Staccato/basic.
+ advancePracticeStep();
 }
 
 function manualDown(k){
@@ -2565,44 +4478,216 @@ function manualDown(k){
  judgePracticeKey(k);
 }
 
-function manualUp(k){pressed.delete(k);keyEls.get(k)?.classList.remove('active');updateHeld()}
+function manualUp(k){
+ pressed.delete(k);
+ keyEls.get(k)?.classList.remove('active');
+ updateHeld();
+
+ if(playing || !E.advancedMode?.checked || idx>=seq.length)return;
+
+ const item=seq[idx];
+ if(!item || !['tenuto','dotted','fermata'].includes(item.type))return;
+ if(holdKey!==k || !holdStart)return;
+
+ const held=performance.now()-holdStart;
+ const beat=(60000/(parseInt(E.bpm.value)||120))*(parseFloat(E.unit.value)||1);
+ const required=beat*(item.requiredHoldBeats||.88);
+
+ holdKey=null;
+ holdStart=0;
+ stopHoldTimer();
+
+ if(held>=required){
+   setPracticeFeedback(
+     `${item.type==='tenuto'?'테누토':item.type==='dotted'?'점음표':'페르마타'} ✓ ${Math.round(held)}ms`,
+     'ok'
+   );
+   advancePracticeStep();
+ }else{
+   const remain=Math.max(0,required-held);
+   wrongPracticeKey(
+     k,
+     `${item.type==='tenuto'?'테누토':item.type==='dotted'?'점음표':'페르마타'} · ${Math.round(remain)}ms 더 유지해야 합니다`
+   );
+ }
+}
 
 E.saveSong.addEventListener('click',saveSong);E.deleteSong.addEventListener('click',deleteSong);
 E.newSong.addEventListener('click',openSongModal);E.search.addEventListener('input',renderLibrary);
 
 
-E.workspaceToggle.addEventListener('click',()=>{
- const main=document.querySelector('.main');
- const opening=main.classList.contains('library-hidden') || E.settingsPanel.classList.contains('collapsed');
 
- if(opening){
-   main.classList.remove('library-hidden');
-   E.settingsPanel.classList.remove('collapsed');
- }else{
-   main.classList.add('library-hidden');
-   E.settingsPanel.classList.add('collapsed');
+
+function mountSettingsOverlay(){
+ if(E.settingsPanel && E.settingsPanel.parentElement!==document.body){
+   document.body.appendChild(E.settingsPanel);
  }
 
- const label=E.workspaceToggle.querySelector('.workspace-label');
- const icon=E.workspaceToggle.querySelector('.btn-icon');
+ if(E.settingsPanel && !E.settingsPanel.querySelector('.settings-scroll-content')){
+   const scroller=document.createElement('div');
+   scroller.className='settings-scroll-content';
 
- if(label)label.textContent=opening?'설정 · 라이브러리 닫기':'설정 · 라이브러리 열기';
- if(icon)icon.textContent=opening?'✕':'⚙';
+   [...E.settingsPanel.children].forEach(child=>{
+     if(child.id!=='settingsCloseFixed'){
+       scroller.appendChild(child);
+     }
+   });
+
+   E.settingsPanel.appendChild(scroller);
+ }
+
+ // Reorder the settings content: practice mode, key display, audio controls first.
+ const scroller=E.settingsPanel?.querySelector('.settings-scroll-content');
+ if(scroller && !scroller.dataset.ordered){
+   scroller.dataset.ordered='1';
+
+   const advancedRow=scroller.querySelector('.advanced-mode-row');
+   const caseRow=scroller.querySelector('.case-mode-row');
+   const ranges=[...scroller.querySelectorAll('.range-wrap')];
+
+   const topGroup=document.createElement('div');
+   topGroup.className='settings-top-group';
+
+   if(advancedRow)topGroup.appendChild(advancedRow);
+   if(caseRow)topGroup.appendChild(caseRow);
+
+   if(ranges.length){
+     const audioGroup=document.createElement('div');
+     audioGroup.className='settings-audio-group';
+     ranges.forEach(el=>audioGroup.appendChild(el));
+     topGroup.appendChild(audioGroup);
+   }
+
+   scroller.insertBefore(topGroup,scroller.firstChild);
+ }
+
+ if(E.settingsCloseFixed && E.settingsCloseFixed.parentElement!==document.body){
+   document.body.appendChild(E.settingsCloseFixed);
+ }
+}
+
+function syncLibraryToOverlay(){
+ if(!E.overlayLibrarySlot)return;
+ const aside=document.querySelector('.main>aside.panel');
+ if(!aside)return;
+
+ // Move the real library contents into the overlay while open.
+ if(!E.overlayLibrarySlot.contains(aside)){
+   E.overlayLibrarySlot.appendChild(aside);
+ }
+}
+
+E.workspaceToggle.addEventListener('click',()=>{
+ const main=document.querySelector('.main');
+
+ if(document.body.classList.contains('settings-open')){
+   closeWorkspaceOverlay();
+   return;
+ }
+
+ mountSettingsOverlay();
+ syncLibraryToOverlay();
+
+ main?.classList.remove('library-hidden');
+ E.settingsPanel?.classList.remove('collapsed');
+ E.settingsBackdrop?.classList.add('show');
+ E.settingsCloseFixed?.classList.add('show');
+ E.workspaceToggle?.classList.add('open');
+
+ // Master state last: only now can the overlay become visible/clickable.
+ document.body.classList.add('settings-open');
+
+ const label=E.workspaceToggle?.querySelector('.workspace-label');
+ const icon=E.workspaceToggle?.querySelector('.btn-icon');
+ if(label)label.textContent='설정 · 라이브러리 닫기';
+ if(icon)icon.textContent='✕';
+
+ E.workspaceToggle?.blur();
 });
 
+
+function setPracticeMode(advanced,save=true){
+ E.advancedMode.checked=advanced;
+ E.beginnerModeBtn?.classList.toggle('active',!advanced);
+ E.advancedModeBtn?.classList.toggle('active',advanced);
+
+ if(E.practiceModeDesc){
+   E.practiceModeDesc.textContent=advanced
+     ?'고급 연습: 연주법과 유지 시간을 판정하지만 약간의 여유를 둡니다.'
+     :'초급 연습: 음과 화음 위주로 편하게 진행합니다.';
+ }
+
+ if(save)localStorage.setItem('robloxPianoAdvancedMode',advanced?'1':'0');
+
+ idx=0;
+ practiceMatched.clear();
+ practiceOrderPos=0;
+ holdStart=0;
+ holdKey=null;
+ stopHoldTimer();
+ parseSheet();
+
+ E.status.textContent=advanced?'고급 연습':'초급 연습';
+ setPracticeFeedback(advanced
+   ?'고급 연습 · 테누토/점음표/페르마타는 길이까지 맞춰야 합니다.'
+   :'초급 연습 · 맞는 음을 누르면 진행합니다.');
+}
+E.beginnerModeBtn?.addEventListener('click',()=>setPracticeMode(false));
+E.advancedModeBtn?.addEventListener('click',()=>setPracticeMode(true));
+
+
+E.lowercaseModeBtn?.addEventListener('click',()=>setKeyDisplayMode(false));
+E.uppercaseModeBtn?.addEventListener('click',()=>setKeyDisplayMode(true));
+
+
+
+function closeWorkspaceOverlay(){
+ const main=document.querySelector('.main');
+
+ // Remove the master open state first. CSS immediately removes all hit-testing.
+ document.body.classList.remove('settings-open');
+
+ main?.classList.add('library-hidden');
+ E.settingsPanel?.classList.add('collapsed');
+ E.settingsBackdrop?.classList.remove('show');
+ E.settingsCloseFixed?.classList.remove('show');
+ E.workspaceToggle?.classList.remove('open');
+
+ const label=E.workspaceToggle?.querySelector('.workspace-label');
+ const icon=E.workspaceToggle?.querySelector('.btn-icon');
+ if(label)label.textContent='설정 · 라이브러리 열기';
+ if(icon)icon.textContent='⚙';
+
+ // Prevent retained focus/pressed visuals.
+ if(document.activeElement && E.settingsPanel?.contains(document.activeElement)){
+   document.activeElement.blur();
+ }
+ E.workspaceToggle?.blur();
+}
+
+E.settingsBackdrop?.addEventListener('click',closeWorkspaceOverlay);
+
+E.settingsCloseFixed?.addEventListener('click',closeWorkspaceOverlay);
 E.cancelSongModal.addEventListener('click',closeSongModal);
 E.saveSongModal.addEventListener('click',saveSongFromModal);
 E.songModal.addEventListener('pointerdown',e=>{
  if(e.target===E.songModal)closeSongModal();
 });
 window.addEventListener('keydown',e=>{
- if(e.key==='Escape'&&!E.songModal.classList.contains('hidden')){
+ if(e.key!=='Escape')return;
+
+ if(!E.songModal.classList.contains('hidden')){
    closeSongModal();
+   return;
+ }
+
+ if(document.body.classList.contains('settings-open')){
+   closeWorkspaceOverlay();
  }
 });
 E.saveTxt.addEventListener('click',exportCurrent);E.exportAll.addEventListener('click',exportAll);
 E.importTxt.addEventListener('click',()=>E.fileInput.click());E.fileInput.addEventListener('change',()=>{importFiles([...E.fileInput.files]);E.fileInput.value=''});
-E.play.addEventListener('click',()=>{parseSheet();if(!seq.length){E.status.textContent='악보 없음';return}playing=true;practiceMatched.clear();setPracticeFeedback('자동 재생 중');initAudio();playStep()});
+E.play.addEventListener('click',()=>{parseSheet();if(!scoreSeq.length){E.status.textContent='악보 없음';return}playing=true;practiceMatched.clear();setPracticeFeedback('자동 재생 중');initAudio();playStep()});
 E.pause.addEventListener('click',()=>{playing=false;clearTimeout(timer);practiceMatched.clear();E.status.textContent='직접 연습';setPracticeFeedback('직접 눌러서 이어서 진행할 수 있어요.');});
 E.stop.addEventListener('click',()=>stopPlayback(true));
 E.slower.addEventListener('click',()=>{
@@ -2623,6 +4708,7 @@ E.sheet.addEventListener('input',()=>{if(!playing){idx=0;parseSheet()}});E.bpm.a
 E.bpm.addEventListener('change',()=>clampBpm(true));
 E.bpm.addEventListener('blur',()=>clampBpm(true));
 
+
 window.addEventListener('keydown',e=>{
  if(['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName))return;
  const k=e.key;
@@ -2634,7 +4720,60 @@ E.volume.addEventListener('input',()=>{initAudio();updateAudioMix()});
 E.reverb.addEventListener('input',()=>{initAudio();updateAudioMix()});
 updateAudioMix();
 
-buildKeyboard();loadLibrary();clampBpm(true);renderSequence();setPracticeFeedback('현재 강조된 키를 눌러 진행하세요.');
+
+let layoutResizeRaf=0;
+function refreshResponsiveLayout(){
+ cancelAnimationFrame(layoutResizeRaf);
+ layoutResizeRaf=requestAnimationFrame(()=>{
+   centerSequenceTrack(false);
+   // Force keyboard rows to recalculate after viewport changes.
+   document.querySelectorAll('.krow').forEach(row=>{
+     row.style.transform='';
+   });
+ });
+}
+
+window.addEventListener('resize',refreshResponsiveLayout,{passive:true});
+window.addEventListener('orientationchange',()=>setTimeout(refreshResponsiveLayout,80),{passive:true});
+
+if('ResizeObserver' in window){
+ const ro=new ResizeObserver(()=>refreshResponsiveLayout());
+ if(E.sequenceViewport)ro.observe(E.sequenceViewport);
+ const practicePanel=document.querySelector('main.panel');
+ if(practicePanel)ro.observe(practicePanel);
+}
+
+document.body.classList.remove('settings-open');
+E.settingsPanel?.classList.add('collapsed');
+E.settingsBackdrop?.classList.remove('show');
+E.settingsCloseFixed?.classList.remove('show');
+E.workspaceToggle?.classList.remove('open');
+if(E.workspaceToggle){
+ const label=E.workspaceToggle.querySelector('.workspace-label');
+ const icon=E.workspaceToggle.querySelector('.btn-icon');
+ if(label)label.textContent='설정 · 라이브러리 열기';
+ if(icon)icon.textContent='⚙';
+}
+
+
+// Always start with the settings overlay physically closed/non-interactive.
+document.body.classList.remove('settings-open');
+E.settingsPanel?.classList.add('collapsed');
+E.settingsBackdrop?.classList.remove('show');
+E.settingsCloseFixed?.classList.remove('show');
+E.workspaceToggle?.classList.remove('open');
+
+buildKeyboard();
+mountSettingsOverlay();
+setKeyDisplayMode(localStorage.getItem('robloxPianoDisplayUppercase')==='1',false);
+if(E.advancedMode){
+ setPracticeMode(localStorage.getItem('robloxPianoAdvancedMode')==='1',false);
+}
+loadLibrary();clampBpm(true);renderSequence();setPracticeFeedback(
+ E.advancedMode?.checked
+   ?'고급 연습 · 연주법까지 맞춰 진행하세요.'
+   :'초급 연습 · 현재 강조된 키를 눌러 진행하세요.'
+);
 </script>
 
 
