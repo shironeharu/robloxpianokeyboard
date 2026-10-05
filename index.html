@@ -1483,6 +1483,265 @@ input,textarea,select{
   text-shadow:0 0 12px rgba(255,75,96,.24);
 }
 
+
+/* ===== 100vh Focus Practice Layout ===== */
+html,body{
+  height:100%;
+}
+body{
+  min-height:100vh;
+  margin:0;
+  overflow:hidden;
+}
+.app{
+  height:100vh;
+  max-height:100vh;
+  display:flex;
+  flex-direction:column;
+  max-width:1480px;
+  margin:0 auto;
+  padding:10px 14px 12px;
+  box-sizing:border-box;
+}
+.simple-title{
+  flex:0 0 auto;
+  padding:6px 0 2px !important;
+}
+.simple-title h1{
+  font-size:clamp(20px,2.2vw,30px) !important;
+}
+
+.main{
+  flex:1 1 auto;
+  min-height:0;
+  display:flex !important;
+  flex-direction:column;
+  gap:10px !important;
+  overflow:hidden;
+}
+.main>aside.panel{
+  flex:0 0 auto;
+  max-height:28vh;
+  overflow:hidden;
+}
+.main>main.panel{
+  flex:1 1 auto;
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden !important;
+  padding:12px 16px 14px !important;
+  box-sizing:border-box;
+}
+
+/* 기본 집중 모드에서는 헤더 버튼만 작게 */
+.top-control-row{
+  flex:0 0 auto;
+  min-height:34px !important;
+  margin-bottom:2px !important;
+}
+.workspace-toggle{
+  min-width:0 !important;
+  min-height:32px !important;
+  padding:6px 10px !important;
+  font-size:11px !important;
+}
+
+/* 설정이 닫혀있을 때는 연습 영역이 화면 대부분을 사용 */
+.settings-panel.collapsed{
+  display:none !important;
+}
+.settings-panel:not(.collapsed){
+  flex:0 0 auto;
+  max-height:32vh;
+  overflow:auto;
+  margin-bottom:8px !important;
+}
+
+/* 현재 음 */
+.status{
+  flex:0 0 auto;
+  min-height:118px !important;
+  margin-top:0 !important;
+}
+.status .small{
+  margin-bottom:6px !important;
+}
+.current{
+  font-size:clamp(54px,7vh,96px) !important;
+  line-height:.88 !important;
+}
+
+/* 진행 상태 박스는 우측 상단에 작게 */
+.status .pill{
+  font-size:10px !important;
+  line-height:1.25 !important;
+  padding:6px 8px !important;
+}
+.status .pill:nth-of-type(2){right:150px !important}
+.status .pill:nth-of-type(3){right:78px !important}
+.status .pill:nth-of-type(4){right:6px !important}
+
+/* 진행률 */
+.progress{
+  flex:0 0 auto;
+  width:100%;
+  max-width:720px !important;
+  height:4px !important;
+  margin:0 auto 4px !important;
+}
+
+/* 흐르는 연주 진행 */
+.sequence-stage{
+  flex:0 0 auto;
+  width:100%;
+  max-width:1120px !important;
+  margin:0 auto 4px !important;
+  padding:0 !important;
+}
+.sequence-label{
+  margin-bottom:2px !important;
+  font-size:9px !important;
+}
+.sequence-viewport{
+  height:82px !important;
+}
+.sequence-track{
+  height:82px !important;
+}
+.seq-item{
+  min-width:64px !important;
+  font-size:16px !important;
+}
+.seq-item.current{
+  min-width:110px !important;
+  font-size:34px !important;
+}
+.sequence-marker{
+  margin-top:-2px !important;
+}
+.practice-feedback{
+  min-height:18px !important;
+  margin-top:0 !important;
+  font-size:11px !important;
+}
+
+/* 정보칸은 기본 연습화면에서 최대한 얇게 */
+.info{
+  flex:0 0 auto;
+  max-width:1080px;
+  margin:2px auto 0 !important;
+}
+.info>div{
+  padding:5px 8px !important;
+  min-height:0 !important;
+  font-size:10px !important;
+}
+
+/* 키보드가 화면의 가장 큰 영역을 차지 */
+.keyboard-shell{
+  flex:1 1 auto;
+  min-height:0;
+  width:100%;
+  max-width:1240px;
+  margin:6px auto 0 !important;
+  padding:16px 18px 18px !important;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  overflow:hidden !important;
+  box-sizing:border-box;
+}
+.krow{
+  flex:0 1 auto;
+  gap:6px !important;
+  margin-bottom:6px !important;
+}
+.key{
+  height:clamp(46px,7.3vh,68px) !important;
+  min-width:clamp(40px,3.7vw,58px) !important;
+  border-radius:10px !important;
+}
+.key .cap{
+  font-size:clamp(11px,1.5vh,15px) !important;
+}
+.key .note{
+  font-size:clamp(8px,1.1vh,10px) !important;
+}
+
+/* 라이브러리는 열렸을 때만 상단에 compact하게 */
+.song-list{
+  max-height:15vh !important;
+  overflow-x:auto !important;
+  overflow-y:hidden !important;
+}
+.song-card{
+  min-width:190px !important;
+  max-width:230px !important;
+}
+
+/* 1366x768 같은 화면에서는 더 압축 */
+@media (max-height:820px){
+  .app{padding-top:6px}
+  .simple-title{padding:2px 0 0 !important}
+  .simple-title h1{font-size:22px !important}
+  .top-control-row{min-height:30px !important}
+  .status{min-height:94px !important}
+  .current{font-size:clamp(48px,7vh,72px) !important}
+  .sequence-viewport,.sequence-track{height:68px !important}
+  .seq-item.current{font-size:30px !important}
+  .keyboard-shell{padding:10px 14px 12px !important;margin-top:3px !important}
+  .key{height:clamp(40px,6.5vh,56px) !important}
+  .info{display:none !important}
+}
+
+/* 아주 작은 화면에서는 세로 스크롤 허용 */
+@media (max-height:650px), (max-width:900px){
+  body{overflow:auto}
+  .app{
+    height:auto;
+    min-height:100vh;
+    max-height:none;
+  }
+  .main{overflow:visible}
+  .main>main.panel{overflow:visible !important}
+  .keyboard-shell{overflow-x:auto !important}
+}
+
+
+/* ===== Final spacing polish ===== */
+.app{
+  padding:8px 14px 22px !important;
+}
+.simple-title{
+  padding:2px 0 0 !important;
+}
+.simple-title h1{
+  font-size:clamp(17px,1.6vw,23px) !important;
+  font-weight:850 !important;
+  letter-spacing:-.035em !important;
+}
+.main{
+  padding-bottom:4px;
+}
+.main>main.panel{
+  margin-bottom:2px !important;
+}
+.keyboard-shell{
+  margin-bottom:8px !important;
+}
+@media (max-height:820px){
+  .app{
+    padding:5px 12px 16px !important;
+  }
+  .simple-title h1{
+    font-size:18px !important;
+  }
+  .keyboard-shell{
+    margin-bottom:6px !important;
+  }
+}
+
 </style>
 </head>
 <body>
