@@ -1446,6 +1446,43 @@ input,textarea,select{
   gap:8px;
 }
 
+
+/* ===== Wrong key feedback ===== */
+.key.wrong{
+  outline:3px solid rgba(255,86,102,.98) !important;
+  outline-offset:2px !important;
+  background:linear-gradient(180deg,#ffd6db,#ff8d99) !important;
+  color:#3a050a !important;
+  box-shadow:
+    0 0 0 2px rgba(255,86,102,.22),
+    0 0 18px rgba(255,74,92,.72),
+    0 0 38px rgba(255,58,81,.34) !important;
+}
+.key.wrong .cap,
+.key.wrong .note{
+  color:#4b070d !important;
+  opacity:1 !important;
+}
+.key.wrong::after{
+  opacity:.9 !important;
+  background:
+    radial-gradient(ellipse at center,
+      rgba(255,85,101,.9) 0%,
+      rgba(255,69,88,.42) 42%,
+      transparent 76%) !important;
+}
+.current.wrong{
+  color:#ff6f7f !important;
+  text-shadow:
+    0 0 8px rgba(255,119,132,.88),
+    0 0 24px rgba(255,65,86,.62),
+    0 0 48px rgba(255,48,74,.28) !important;
+}
+.practice-feedback.bad{
+  color:#ff6f7f !important;
+  text-shadow:0 0 12px rgba(255,75,96,.24);
+}
+
 </style>
 </head>
 <body>
@@ -1803,7 +1840,7 @@ function saveSong(){
    title,
    category:E.category.value.trim(),
    sheet:E.sheet.value,
-   bpm:clampBpm(),
+   bpm:clampBpm(true),
    unit:E.unit.value,
    updatedAt:nowISO()
  };
@@ -1852,7 +1889,29 @@ function deleteSong(){
  renderLibrary();
  if(songs.length)selectSong(songs[0].id);else newSong();
 }
-function clampBpm(){const v=Math.max(30,Math.min(300,parseInt(E.bpm.value)||120));E.bpm.value=v;E.bpmView.textContent=v;return v}
+function clampBpm(force=false){
+ const raw=E.bpm.value.trim();
+
+ // 입력 중에는 빈 값이나 1~2자리 숫자를 강제로 30/300으로 바꾸지 않는다.
+ if(!force){
+   if(raw===''){
+     E.bpmView.textContent='—';
+     return null;
+   }
+   const live=parseInt(raw,10);
+   if(Number.isFinite(live)){
+     E.bpmView.textContent=live;
+     return live;
+   }
+   return null;
+ }
+
+ const parsed=parseInt(raw,10);
+ const v=Math.max(30,Math.min(300,Number.isFinite(parsed)?parsed:120));
+ E.bpm.value=v;
+ E.bpmView.textContent=v;
+ return v;
+}
 
 function songToTxt(s){
  return [
@@ -1866,7 +1925,7 @@ function songToTxt(s){
  ].join('\n');
 }
 function currentFormSong(){
- return {title:E.title.value.trim()||'제목 없음',category:E.category.value.trim(),sheet:E.sheet.value,bpm:clampBpm(),unit:E.unit.value};
+ return {title:E.title.value.trim()||'제목 없음',category:E.category.value.trim(),sheet:E.sheet.value,bpm:clampBpm(true),unit:E.unit.value};
 }
 function downloadText(filename,text){
  const blob=new Blob([text],{type:'text/plain;charset=utf-8'});
@@ -2200,7 +2259,21 @@ function judgePracticeKey(k){
 
  if(!item.keys.includes(k)){
    setPracticeFeedback(`${k.toUpperCase()} · 다른 키예요`,'bad');
+
+   const wrongKey=keyEls.get(k);
+   if(wrongKey){
+     wrongKey.classList.remove('wrong');
+     void wrongKey.offsetWidth;
+     wrongKey.classList.add('wrong');
+     setTimeout(()=>wrongKey.classList.remove('wrong'),320);
+   }
+
+   E.current.classList.remove('wrong');
+   void E.current.offsetWidth;
+   E.current.classList.add('wrong');
+
    setTimeout(()=>{
+     E.current.classList.remove('wrong');
      if(!playing) setPracticeFeedback('현재 강조된 키를 눌러 진행하세요.');
    },420);
    return;
@@ -2274,20 +2347,22 @@ E.play.addEventListener('click',()=>{parseSheet();if(!seq.length){E.status.textC
 E.pause.addEventListener('click',()=>{playing=false;clearTimeout(timer);practiceMatched.clear();E.status.textContent='직접 연습';setPracticeFeedback('직접 눌러서 이어서 진행할 수 있어요.');});
 E.stop.addEventListener('click',()=>stopPlayback(true));
 E.slower.addEventListener('click',()=>{
-  const cur=clampBpm();
+  const cur=clampBpm(true);
   E.bpm.value=Math.max(30,cur-5);
-  clampBpm();
+  clampBpm(true);
   E.status.textContent='속도 ↓';
   if(playing){clearTimeout(timer);playStep()}
 });
 E.faster.addEventListener('click',()=>{
-  const cur=clampBpm();
+  const cur=clampBpm(true);
   E.bpm.value=Math.min(300,cur+5);
-  clampBpm();
+  clampBpm(true);
   E.status.textContent='속도 ↑';
   if(playing){clearTimeout(timer);playStep()}
 });
-E.sheet.addEventListener('input',()=>{if(!playing){idx=0;parseSheet()}});E.bpm.addEventListener('input',clampBpm);
+E.sheet.addEventListener('input',()=>{if(!playing){idx=0;parseSheet()}});E.bpm.addEventListener('input',()=>clampBpm(false));
+E.bpm.addEventListener('change',()=>clampBpm(true));
+E.bpm.addEventListener('blur',()=>clampBpm(true));
 
 window.addEventListener('keydown',e=>{
  if(['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName))return;
@@ -2300,7 +2375,7 @@ E.volume.addEventListener('input',()=>{initAudio();updateAudioMix()});
 E.reverb.addEventListener('input',()=>{initAudio();updateAudioMix()});
 updateAudioMix();
 
-buildKeyboard();loadLibrary();clampBpm();renderSequence();setPracticeFeedback('현재 강조된 키를 눌러 진행하세요.');
+buildKeyboard();loadLibrary();clampBpm(true);renderSequence();setPracticeFeedback('현재 강조된 키를 눌러 진행하세요.');
 </script>
 
 
