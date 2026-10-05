@@ -1,0 +1,2309 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Roblox Piano Trainer</title>
+<style>
+:root{
+  --bg:#090d16;--panel:#111827;--panel2:#151d2f;--line:#29344c;
+  --text:#eef4ff;--muted:#97a5bf;--accent:#7d8cff;--accent2:#a277ff;
+  --good:#61d9a5;--bad:#ff728d;--warn:#ffd36c;--shadow:0 16px 44px rgba(0,0,0,.34);
+}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(180deg,#080b12,#0b1120);color:var(--text);
+font-family:Pretendard,Inter,system-ui,sans-serif;padding:24px}
+.app{max-width:1500px;margin:auto;display:grid;gap:18px}
+.hero,.panel{border:1px solid rgba(255,255,255,.07);box-shadow:var(--shadow)}
+.hero{border-radius:24px;padding:22px;background:linear-gradient(135deg,rgba(125,140,255,.18),rgba(162,119,255,.09))}
+.hero h1{margin:0 0 7px;font-size:30px}.hero p{margin:0;color:var(--muted)}
+.main{display:grid;grid-template-columns:360px 1fr;gap:18px;align-items:start}
+.panel{border-radius:20px;padding:18px;background:linear-gradient(180deg,var(--panel),var(--panel2))}
+h2{font-size:18px;margin:0 0 15px}label{display:block;font-size:12px;font-weight:800;color:#dbe5ff;margin:0 0 6px}
+input,textarea,select{width:100%;border:1px solid var(--line);background:#0b1221;color:var(--text);
+border-radius:13px;padding:11px 12px;font:inherit;outline:none}
+input:focus,textarea:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(125,140,255,.13)}
+textarea{min-height:175px;resize:vertical;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;line-height:1.5}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.stack{display:grid;gap:12px}
+button{border:0;border-radius:12px;padding:11px 14px;background:#222c43;color:white;font-weight:800;cursor:pointer}
+button:hover{filter:brightness(1.08)}button.primary{background:linear-gradient(135deg,var(--accent),var(--accent2))}
+button.danger{background:#44202a;color:#ffd4dc}button.ghost{border:1px solid var(--line);background:#11192a}
+.buttons{display:flex;flex-wrap:wrap;gap:8px}
+.library-toolbar{display:grid;grid-template-columns:1fr auto;gap:8px;margin-bottom:10px}
+.song-list{display:grid;gap:8px;max-height:430px;overflow:auto;padding-right:4px}
+.song-card{border:1px solid var(--line);background:#0c1423;border-radius:14px;padding:12px;cursor:pointer}
+.song-card:hover{border-color:#53617d}.song-card.active{border-color:var(--accent);box-shadow:0 0 0 2px rgba(125,140,255,.15)}
+.song-title{font-weight:900}.song-meta{font-size:12px;color:var(--muted);margin-top:5px;display:flex;gap:8px;flex-wrap:wrap}
+.empty{padding:18px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:14px}
+.status{display:grid;grid-template-columns:1fr auto auto auto;gap:10px;align-items:end}
+.current{font-size:34px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-weight:900}
+.pill{border:1px solid var(--line);background:#0b1221;border-radius:13px;padding:9px 11px;text-align:center;font-size:12px}
+.progress{height:10px;background:#09101d;border:1px solid var(--line);border-radius:999px;overflow:hidden;margin-top:12px}
+.progress>div{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2))}
+.top-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.keyboard-shell{margin-top:18px;overflow:auto;background:#090f1b;border:1px solid var(--line);border-radius:20px;padding:16px}
+.krow{display:flex;gap:7px;margin-bottom:7px;width:max-content;min-width:100%}
+.key{height:54px;min-width:52px;border-radius:12px;background:linear-gradient(180deg,#f5f7ff,#cfd6eb);color:#0e1422;
+display:flex;align-items:center;justify-content:center;flex-direction:column;font-weight:900;box-shadow:0 3px 0 rgba(0,0,0,.2);user-select:none}
+.key.dark{background:linear-gradient(180deg,#2a344b,#171e31);color:#edf3ff}.key.playable{cursor:pointer}
+.key.active{transform:translateY(2px);background:linear-gradient(180deg,#8997ff,#7180ef);color:white;box-shadow:none}
+.key.target{outline:3px solid rgba(97,217,165,.85);outline-offset:1px}
+.note{font-size:9px;opacity:.65;margin-top:3px}.w70{min-width:70px}.w85{min-width:85px}.w100{min-width:100px}.w120{min-width:120px}.w140{min-width:140px}
+.info{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+.info>div{border:1px solid var(--line);background:#0b1221;border-radius:13px;padding:11px}.small{font-size:12px;color:var(--muted)}
+.v{font-size:18px;font-weight:900;margin-top:5px}.hint{font-size:12px;color:var(--muted);line-height:1.6}.hidden{display:none!important}
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:20px;z-index:999}
+.modal{width:min(560px,100%);background:#111827;border:1px solid var(--line);border-radius:20px;padding:18px;box-shadow:var(--shadow)}
+@media(max-width:1050px){.main{grid-template-columns:1fr}.status{grid-template-columns:1fr 1fr}.info{grid-template-columns:1fr}}
+@media(max-width:600px){body{padding:12px}.grid2{grid-template-columns:1fr}.status{grid-template-columns:1fr}.hero h1{font-size:24px}}
+
+.sidebar-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:15px}
+.sidebar-head h2{margin:0}
+.icon-btn{width:40px;height:40px;padding:0;display:inline-flex;align-items:center;justify-content:center;border-radius:11px}
+.main.library-hidden{grid-template-columns:1fr}
+.main.library-hidden aside.panel{display:none}
+.library-reopen{display:none;margin-bottom:10px}
+.main.library-hidden .library-reopen{display:inline-flex}
+.sequence-stage{
+  margin-top:20px;
+  padding:22px 0 18px;
+  overflow:hidden;
+  position:relative;
+}
+.sequence-label{
+  font-size:12px;
+  color:var(--muted);
+  font-weight:800;
+  margin-bottom:14px;
+  text-align:center;
+  letter-spacing:.04em;
+}
+.sequence-viewport{
+  overflow:hidden;
+  position:relative;
+  min-height:104px;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 10%,#000 90%,transparent 100%);
+  mask-image:linear-gradient(90deg,transparent 0%,#000 10%,#000 90%,transparent 100%);
+}
+.sequence-viewport::before{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:4px;
+  bottom:4px;
+  width:1px;
+  background:linear-gradient(180deg,transparent,rgba(125,140,255,.45),transparent);
+  transform:translateX(-50%);
+  z-index:0;
+}
+.sequence-track{
+  display:flex;
+  gap:30px;
+  align-items:center;
+  min-height:104px;
+  padding:0 50%;
+  width:max-content;
+  transition:transform .34s cubic-bezier(.22,.61,.36,1);
+  will-change:transform;
+  position:relative;
+  z-index:1;
+}
+.seq-item{
+  flex:0 0 auto;
+  min-width:72px;
+  text-align:center;
+  color:#8290aa;
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  font-size:20px;
+  font-weight:700;
+  opacity:.22;
+  transform:scale(.82);
+  filter:blur(.15px);
+  transition:
+    transform .28s cubic-bezier(.22,.61,.36,1),
+    opacity .28s ease,
+    color .28s ease,
+    filter .28s ease;
+  white-space:nowrap;
+}
+.seq-item.near{
+  opacity:.48;
+  transform:scale(.9);
+  color:#aab5cc;
+}
+.seq-item.current{
+  min-width:120px;
+  opacity:1;
+  transform:scale(1.18);
+  color:#f7f9ff;
+  font-size:36px;
+  font-weight:1000;
+  filter:none;
+  text-shadow:0 0 22px rgba(125,140,255,.28);
+}
+.seq-item.done{
+  opacity:.12;
+  transform:scale(.76);
+}
+.seq-item.future{
+  opacity:.28;
+}
+.sequence-marker{
+  width:34px;
+  height:3px;
+  background:linear-gradient(90deg,transparent,var(--accent),transparent);
+  margin:2px auto 0;
+  border-radius:99px;
+  opacity:.95;
+  box-shadow:0 0 14px rgba(125,140,255,.35);
+}
+@media(max-width:650px){
+  .modal-grid{grid-template-columns:1fr}
+  .sequence-track{gap:20px}
+  .seq-item{min-width:58px;font-size:16px}
+  .seq-item.current{min-width:92px;font-size:29px}
+}
+
+
+.audio-controls{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-top:12px;
+}
+.range-wrap{
+  border:1px solid var(--line);
+  background:#0b1221;
+  border-radius:14px;
+  padding:11px 12px;
+}
+.range-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:8px;
+  margin-bottom:8px;
+}
+.range-head label{margin:0}
+.range-value{font-size:12px;font-weight:900;color:#dce5ff}
+input[type=range]{padding:0;border:0;background:transparent;box-shadow:none}
+@media(max-width:650px){.audio-controls{grid-template-columns:1fr}}
+
+
+.settings-toggle-row{
+  display:flex;
+  justify-content:flex-end;
+  margin-bottom:10px;
+}
+.settings-panel{
+  overflow:hidden;
+  max-height:2000px;
+  opacity:1;
+  transform:translateY(0);
+  transition:max-height .34s ease,opacity .22s ease,transform .28s ease,margin .28s ease;
+}
+.settings-panel.collapsed{
+  max-height:0;
+  opacity:0;
+  transform:translateY(-8px);
+  margin:0;
+  pointer-events:none;
+}
+.settings-toggle{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+}
+.focus-mode-note{
+  font-size:12px;
+  color:var(--muted);
+  margin-left:8px;
+}
+
+
+/* ===== Focus layout / visual polish ===== */
+body{
+  background:
+    radial-gradient(circle at 50% -10%,rgba(91,108,255,.14),transparent 36%),
+    linear-gradient(180deg,#070a12 0%,#0a1020 58%,#080c15 100%);
+}
+.app{max-width:1480px;margin:auto}
+.main{
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+  align-items:stretch;
+}
+.main>aside.panel{
+  width:100%;
+}
+.main>main.panel{
+  width:100%;
+  max-width:1320px;
+  margin:0 auto;
+}
+.main.library-hidden>aside.panel{display:none}
+.main.library-hidden{display:flex}
+
+aside.panel{
+  background:linear-gradient(180deg,rgba(17,24,39,.96),rgba(14,20,34,.96));
+}
+.song-list{
+  display:flex;
+  gap:10px;
+  overflow-x:auto;
+  overflow-y:hidden;
+  max-height:none;
+  padding:2px 2px 8px;
+  scroll-snap-type:x proximity;
+}
+.song-card{
+  min-width:210px;
+  max-width:260px;
+  flex:0 0 auto;
+  scroll-snap-align:start;
+}
+.library-toolbar{
+  grid-template-columns:minmax(220px,1fr) auto;
+}
+.sidebar-head{margin-bottom:10px}
+
+main.panel{
+  background:
+    radial-gradient(circle at 50% 18%,rgba(99,112,255,.08),transparent 30%),
+    linear-gradient(180deg,rgba(14,20,34,.98),rgba(9,14,25,.98));
+  overflow:hidden;
+}
+
+.settings-toggle-row{
+  justify-content:flex-end;
+  min-height:42px;
+}
+.settings-panel{
+  border-bottom:1px solid transparent;
+}
+.settings-panel:not(.collapsed){
+  border-bottom-color:var(--line);
+  padding-bottom:16px;
+  margin-bottom:12px;
+}
+
+.status{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  min-height:160px;
+  text-align:center;
+  margin-top:2px;
+}
+.status>div:first-child{
+  width:100%;
+}
+.current{
+  font-size:clamp(58px,8vw,118px);
+  line-height:.95;
+  letter-spacing:.02em;
+  text-align:center;
+  color:#f8fbff;
+  text-shadow:
+    0 0 12px rgba(160,175,255,.36),
+    0 0 34px rgba(111,126,255,.22),
+    0 0 70px rgba(111,126,255,.13);
+  transition:transform .18s ease,filter .18s ease,text-shadow .18s ease;
+}
+.current.pulse{
+  transform:scale(1.06);
+  filter:brightness(1.16);
+  text-shadow:
+    0 0 16px rgba(191,201,255,.7),
+    0 0 46px rgba(116,132,255,.46),
+    0 0 90px rgba(116,132,255,.25);
+}
+.status .small{
+  text-transform:uppercase;
+  letter-spacing:.18em;
+  font-size:11px;
+  text-align:center;
+  margin-bottom:12px;
+}
+.status .pill{
+  position:absolute;
+  top:8px;
+  min-width:78px;
+  opacity:.72;
+  backdrop-filter:blur(10px);
+  background:rgba(8,14,27,.55);
+}
+.status .pill:nth-of-type(2){right:180px}
+.status .pill:nth-of-type(3){right:94px}
+.status .pill:nth-of-type(4){right:8px}
+
+.progress{
+  max-width:760px;
+  margin:0 auto 8px;
+  opacity:.8;
+}
+
+.sequence-stage{
+  margin:6px auto 18px;
+  padding:10px 0 8px;
+  width:100%;
+  max-width:1080px;
+  overflow:hidden;
+  position:relative;
+}
+.sequence-label{
+  text-align:center;
+  font-size:10px;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  margin-bottom:8px;
+}
+.sequence-viewport{
+  position:relative;
+  width:100%;
+  height:116px;
+  overflow:hidden;
+  contain:layout paint size;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 12%,#000 88%,transparent 100%);
+  mask-image:linear-gradient(90deg,transparent 0%,#000 12%,#000 88%,transparent 100%);
+}
+.sequence-viewport::before{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:7px;
+  bottom:7px;
+  width:1px;
+  background:linear-gradient(180deg,transparent,rgba(132,147,255,.55),transparent);
+  transform:translateX(-50%);
+  z-index:0;
+  box-shadow:0 0 10px rgba(105,123,255,.25);
+}
+.sequence-track{
+  position:absolute;
+  left:0;
+  top:0;
+  display:flex;
+  align-items:center;
+  gap:34px;
+  height:116px;
+  width:max-content;
+  padding:0;
+  margin:0;
+  transition:transform .38s cubic-bezier(.22,.61,.36,1);
+  will-change:transform;
+  z-index:1;
+}
+.seq-item{
+  min-width:74px;
+  text-align:center;
+  color:#8290aa;
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  font-size:18px;
+  font-weight:700;
+  opacity:.18;
+  transform:scale(.8);
+  transition:transform .3s cubic-bezier(.22,.61,.36,1),opacity .3s,color .3s,filter .3s;
+  filter:blur(.25px);
+}
+.seq-item.near{opacity:.48;transform:scale(.9);filter:none}
+.seq-item.current{
+  min-width:130px;
+  opacity:1;
+  transform:scale(1.16);
+  font-size:38px;
+  font-weight:1000;
+  color:#fbfcff;
+  filter:none;
+  text-shadow:
+    0 0 14px rgba(167,178,255,.65),
+    0 0 38px rgba(114,130,255,.34);
+}
+.seq-item.done{opacity:.08;transform:scale(.72)}
+.seq-item.future{opacity:.24}
+.sequence-marker{
+  width:42px;
+  height:3px;
+  margin:0 auto;
+  background:linear-gradient(90deg,transparent,#8d9aff,transparent);
+  box-shadow:0 0 18px rgba(110,125,255,.55);
+}
+
+.info{
+  max-width:1080px;
+  margin:10px auto 0;
+  opacity:.82;
+}
+
+.keyboard-shell{
+  max-width:1240px;
+  margin:28px auto 8px;
+  padding:28px 24px 34px;
+  border-radius:26px;
+  background:
+    radial-gradient(circle at 50% 0%,rgba(93,108,255,.11),transparent 28%),
+    linear-gradient(180deg,#080d18,#070b12);
+  border:1px solid rgba(255,255,255,.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.03),
+    0 18px 60px rgba(0,0,0,.34);
+  overflow-x:auto;
+}
+.krow{
+  gap:8px;
+  margin-bottom:8px;
+  justify-content:center;
+}
+.key{
+  position:relative;
+  height:64px;
+  min-width:58px;
+  border-radius:13px;
+  transition:
+    transform .08s ease,
+    background .12s ease,
+    box-shadow .14s ease,
+    filter .14s ease;
+}
+.key::after{
+  content:"";
+  position:absolute;
+  left:12%;
+  right:12%;
+  bottom:-14px;
+  height:22px;
+  border-radius:50%;
+  opacity:0;
+  background:radial-gradient(ellipse at center,rgba(117,135,255,.65),rgba(117,135,255,.18) 45%,transparent 72%);
+  filter:blur(5px);
+  pointer-events:none;
+  transition:opacity .12s ease;
+}
+.key.target{
+  outline:2px solid rgba(107,228,180,.78);
+  outline-offset:1px;
+  box-shadow:
+    0 0 0 1px rgba(107,228,180,.22),
+    0 0 24px rgba(79,218,166,.24),
+    0 3px 0 rgba(0,0,0,.2);
+}
+.key.target::after{
+  opacity:.35;
+  background:radial-gradient(ellipse at center,rgba(90,238,184,.7),rgba(90,238,184,.15) 48%,transparent 72%);
+}
+.key.active{
+  transform:translateY(4px) scale(.985);
+  color:white;
+  background:linear-gradient(180deg,#9aa7ff,#6979ee);
+  box-shadow:
+    0 0 16px rgba(125,140,255,.5),
+    0 0 34px rgba(125,140,255,.25),
+    inset 0 0 14px rgba(255,255,255,.14);
+  filter:brightness(1.08);
+}
+.key.active::after{opacity:1}
+.key.dark.active{
+  background:linear-gradient(180deg,#6471d8,#39469f);
+}
+.note{font-size:10px;margin-top:4px}
+
+@media(max-width:900px){
+  .status .pill{position:static}
+  .status{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .status>div:first-child{grid-column:1/-1}
+  .status .pill{min-width:0}
+  .current{font-size:clamp(48px,15vw,84px)}
+}
+@media(max-width:650px){
+  body{padding:10px}
+  .song-card{min-width:180px}
+  .keyboard-shell{padding:18px 14px 28px}
+  .key{min-width:50px;height:58px}
+  .sequence-track{gap:22px}
+  .seq-item{min-width:58px;font-size:15px}
+  .seq-item.current{min-width:96px;font-size:30px}
+}
+
+
+.practice-feedback{
+  text-align:center;
+  min-height:24px;
+  margin-top:4px;
+  font-size:13px;
+  font-weight:800;
+  color:var(--muted);
+  transition:color .15s ease,transform .15s ease,opacity .15s ease;
+}
+.practice-feedback.ok{
+  color:var(--good);
+  transform:scale(1.04);
+}
+.practice-feedback.bad{
+  color:var(--bad);
+}
+.practice-feedback.chord{
+  color:#c7d0ff;
+}
+
+
+/* ===== Animated blurred background / particles ===== */
+body{position:relative;overflow-x:hidden}
+.fx-bg{
+  position:fixed;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+  overflow:hidden;
+  background:#060a12;
+}
+.fx-layer,.fx-glow,.fx-vignette,.particle-canvas{
+  position:absolute;
+  inset:-5%;
+}
+.fx-layer{
+  background-image:url('./night_flower_bg.jpg');
+  background-size:cover;
+  background-position:center center;
+  transform-origin:center center;
+  will-change:transform,filter,opacity;
+}
+.fx-back{
+  filter:blur(22px) brightness(.34) saturate(1.05);
+  opacity:.7;
+  transform:scale(1.18);
+  animation:bgDriftBack 26s ease-in-out infinite alternate;
+}
+.fx-mid{
+  filter:blur(8px) brightness(.5) saturate(1.12);
+  opacity:.28;
+  transform:scale(1.08);
+  animation:bgDriftFront 18s ease-in-out infinite alternate;
+}
+.fx-glow{
+  mix-blend-mode:screen;
+  opacity:.18;
+}
+.fx-glow-1{
+  background:
+    radial-gradient(circle at 26% 72%, rgba(78,163,255,.54), transparent 28%),
+    radial-gradient(circle at 68% 24%, rgba(113,127,255,.42), transparent 24%);
+  filter:blur(34px);
+  animation:glowFloat1 16s ease-in-out infinite alternate;
+}
+.fx-glow-2{
+  background:
+    radial-gradient(circle at 70% 70%, rgba(66,208,255,.38), transparent 22%),
+    radial-gradient(circle at 40% 30%, rgba(129,149,255,.34), transparent 18%);
+  filter:blur(48px);
+  animation:glowFloat2 20s ease-in-out infinite alternate;
+}
+.fx-vignette{
+  background:
+    radial-gradient(circle at 50% 50%, transparent 0%, rgba(4,7,14,.08) 58%, rgba(4,7,14,.4) 100%),
+    linear-gradient(180deg, rgba(5,7,13,.44), rgba(5,7,13,.12) 28%, rgba(5,7,13,.46) 100%);
+}
+.particle-canvas{
+  width:100%;
+  height:100%;
+  opacity:.9;
+}
+.app{position:relative;z-index:1}
+.hero,.panel{
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  background-clip:padding-box;
+}
+.hero{
+  background:
+    linear-gradient(135deg,rgba(125,140,255,.16),rgba(162,119,255,.08)),
+    rgba(10,15,28,.55) !important;
+}
+.panel{
+  background-color:rgba(11,17,29,.66) !important;
+}
+.keyboard-shell{
+  background:
+    radial-gradient(circle at 50% 0%,rgba(93,108,255,.11),transparent 28%),
+    linear-gradient(180deg,rgba(8,13,24,.88),rgba(7,11,18,.92)) !important;
+}
+@keyframes bgDriftBack{
+  0%{transform:scale(1.18) translate3d(-1.8%, -1.2%, 0)}
+  50%{transform:scale(1.22) translate3d(1.4%, 1.1%, 0)}
+  100%{transform:scale(1.16) translate3d(.4%, -1.8%, 0)}
+}
+@keyframes bgDriftFront{
+  0%{transform:scale(1.08) translate3d(1.1%, .5%, 0)}
+  50%{transform:scale(1.12) translate3d(-1.6%, -1.2%, 0)}
+  100%{transform:scale(1.1) translate3d(.9%, 1.5%, 0)}
+}
+@keyframes glowFloat1{
+  0%{transform:translate3d(-2%,0,0) scale(1)}
+  100%{transform:translate3d(2%,-2%,0) scale(1.08)}
+}
+@keyframes glowFloat2{
+  0%{transform:translate3d(1%,2%,0) scale(1)}
+  100%{transform:translate3d(-2%,-1%,0) scale(1.06)}
+}
+
+
+.simple-title{
+  width:100%;
+  text-align:center;
+  padding:18px 0 6px;
+  position:relative;
+  z-index:1;
+}
+.simple-title h1{
+  margin:0;
+  font-size:clamp(24px,3vw,36px);
+  font-weight:900;
+  letter-spacing:-.03em;
+  color:#f7f9ff;
+  text-shadow:
+    0 0 14px rgba(160,175,255,.28),
+    0 0 34px rgba(105,125,255,.12);
+}
+.library-collapse-btn{
+  width:34px;
+  height:34px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid rgba(255,255,255,.08);
+  background:rgba(10,16,29,.52);
+  color:#cfd7eb;
+  border-radius:10px;
+  padding:0;
+  font-size:17px;
+  font-weight:900;
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  transition:background .15s ease,border-color .15s ease,transform .15s ease,color .15s ease;
+}
+.library-collapse-btn:hover{
+  background:rgba(20,29,49,.76);
+  border-color:rgba(125,140,255,.28);
+  color:#fff;
+  transform:translateY(-1px);
+}
+.clean-reopen{
+  align-self:flex-start;
+  border:1px solid rgba(255,255,255,.08);
+  background:rgba(10,16,29,.56);
+  color:#dce4f6;
+  padding:9px 13px;
+  border-radius:11px;
+  font-size:13px;
+  font-weight:800;
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+}
+.sidebar-head{
+  align-items:center;
+}
+.sidebar-head h2{
+  font-size:16px;
+  letter-spacing:-.01em;
+}
+
+
+/* ===== Typography & stronger practice emphasis ===== */
+:root{
+  --ui-font:"Pretendard","Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  --mono-font:"Cascadia Mono","JetBrains Mono","SFMono-Regular","Consolas","Liberation Mono",monospace;
+}
+html,body,button,input,textarea,select{
+  font-family:var(--ui-font);
+}
+.simple-title h1{
+  font-family:var(--ui-font);
+  font-weight:900;
+  letter-spacing:-.045em;
+}
+textarea,
+.current,
+.seq-item,
+.key .cap,
+.key .note,
+.big-now{
+  font-family:var(--mono-font) !important;
+}
+.key .cap{
+  font-size:15px;
+  font-weight:900;
+  letter-spacing:.03em;
+  font-variant-numeric:slashed-zero tabular-nums;
+}
+.key .note{
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.02em;
+  opacity:.72;
+  font-variant-numeric:tabular-nums;
+}
+.current{
+  color:#8ff7ff !important;
+  font-weight:1000;
+  letter-spacing:.015em;
+  text-shadow:
+    0 0 6px rgba(143,247,255,.85),
+    0 0 18px rgba(71,219,255,.62),
+    0 0 42px rgba(54,151,255,.36),
+    0 0 82px rgba(66,111,255,.2) !important;
+}
+.current.pulse{
+  color:#c9ffff !important;
+  transform:scale(1.075);
+  filter:brightness(1.2);
+  text-shadow:
+    0 0 8px rgba(213,255,255,1),
+    0 0 24px rgba(110,240,255,.85),
+    0 0 52px rgba(71,187,255,.56),
+    0 0 100px rgba(87,117,255,.3) !important;
+}
+.seq-item.current{
+  color:#ffffff !important;
+  text-shadow:
+    0 0 8px rgba(255,255,255,.55),
+    0 0 20px rgba(156,166,255,.62),
+    0 0 42px rgba(115,129,255,.35) !important;
+}
+.key.target{
+  outline:3px solid rgba(87,255,198,.98) !important;
+  outline-offset:2px !important;
+  background:
+    linear-gradient(180deg,#f8ffff,#d9fff1) !important;
+  color:#07150f !important;
+  box-shadow:
+    0 0 0 2px rgba(87,255,198,.28),
+    0 0 18px rgba(68,255,188,.78),
+    0 0 42px rgba(61,230,177,.48),
+    0 4px 0 rgba(0,0,0,.2) !important;
+  filter:brightness(1.08) saturate(1.1);
+}
+.key.target .cap{
+  color:#073524 !important;
+  text-shadow:0 0 8px rgba(255,255,255,.8);
+}
+.key.target .note{
+  color:#135941 !important;
+  opacity:1 !important;
+}
+.key.target::after{
+  opacity:.95 !important;
+  height:30px !important;
+  bottom:-20px !important;
+  background:
+    radial-gradient(ellipse at center,
+      rgba(83,255,197,.95) 0%,
+      rgba(71,229,178,.56) 35%,
+      rgba(46,196,157,.2) 58%,
+      transparent 78%) !important;
+  filter:blur(6px) !important;
+}
+.key.active{
+  outline:2px solid rgba(151,166,255,.95);
+  outline-offset:1px;
+  background:linear-gradient(180deg,#9ba9ff,#6374e8) !important;
+  color:#fff !important;
+  box-shadow:
+    0 0 0 2px rgba(121,137,255,.18),
+    0 0 22px rgba(108,126,255,.72),
+    0 0 48px rgba(105,115,255,.36),
+    inset 0 0 14px rgba(255,255,255,.15) !important;
+}
+.key.target.active{
+  outline:3px solid #baffea !important;
+  background:linear-gradient(180deg,#69e7c0,#37b991) !important;
+  color:#04110c !important;
+  box-shadow:
+    0 0 0 2px rgba(101,255,204,.34),
+    0 0 24px rgba(77,255,197,.88),
+    0 0 54px rgba(62,230,181,.55),
+    inset 0 0 14px rgba(255,255,255,.2) !important;
+}
+
+
+/* ===== Refined glass UI ===== */
+.hero,.panel,.modal,.range-wrap,.info>div,.pill,.song-card,.keyboard-shell,.settings-panel:not(.collapsed){
+  -webkit-backdrop-filter:blur(20px) saturate(1.08);
+  backdrop-filter:blur(20px) saturate(1.08);
+}
+.panel{
+  background:
+    linear-gradient(180deg,rgba(22,29,45,.88),rgba(12,18,31,.86)) !important;
+  border:1px solid rgba(255,255,255,.12) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.08),
+    inset 0 -1px 0 rgba(255,255,255,.02),
+    0 18px 55px rgba(0,0,0,.34) !important;
+}
+.panel::before{
+  content:"";
+  position:absolute;
+  inset:1px 1px auto 1px;
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.14),transparent);
+  pointer-events:none;
+}
+main.panel,aside.panel{position:relative}
+
+.song-card{
+  background:
+    linear-gradient(180deg,rgba(19,27,43,.90),rgba(11,17,29,.88)) !important;
+  border:1px solid rgba(255,255,255,.09) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.04),
+    0 6px 18px rgba(0,0,0,.14);
+}
+.song-card:hover{
+  border-color:rgba(151,166,255,.32) !important;
+  background:
+    linear-gradient(180deg,rgba(28,37,57,.94),rgba(15,22,37,.92)) !important;
+}
+.song-card.active{
+  border-color:rgba(125,140,255,.52) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.06),
+    0 0 0 1px rgba(125,140,255,.18),
+    0 8px 24px rgba(80,94,210,.12) !important;
+}
+
+.keyboard-shell{
+  background:
+    radial-gradient(circle at 50% 0%,rgba(105,121,255,.11),transparent 26%),
+    linear-gradient(180deg,rgba(13,19,31,.90),rgba(7,12,21,.92)) !important;
+  border:1px solid rgba(255,255,255,.11) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.06),
+    inset 0 -1px 0 rgba(255,255,255,.02),
+    0 18px 48px rgba(0,0,0,.28) !important;
+}
+
+.range-wrap,.info>div,.pill{
+  background:
+    linear-gradient(180deg,rgba(17,25,41,.88),rgba(9,15,26,.86)) !important;
+  border:1px solid rgba(255,255,255,.09) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.035);
+}
+
+.settings-panel:not(.collapsed){
+  background:
+    linear-gradient(180deg,rgba(18,26,42,.82),rgba(10,16,28,.82));
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:16px;
+  padding:16px;
+  margin-bottom:14px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.035);
+}
+
+/* Library toggle: compact glass pill */
+.library-collapse-btn,
+.clean-reopen{
+  display:inline-flex !important;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  min-height:34px;
+  width:auto !important;
+  padding:7px 11px !important;
+  border-radius:999px !important;
+  border:1px solid rgba(255,255,255,.10) !important;
+  background:
+    linear-gradient(180deg,rgba(26,34,51,.88),rgba(13,20,34,.86)) !important;
+  color:#dce5f7 !important;
+  font-size:12px !important;
+  font-weight:800 !important;
+  letter-spacing:-.01em;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.055),
+    0 5px 14px rgba(0,0,0,.18) !important;
+  -webkit-backdrop-filter:blur(18px) saturate(1.08);
+  backdrop-filter:blur(18px) saturate(1.08);
+  transition:
+    transform .15s ease,
+    background .15s ease,
+    border-color .15s ease,
+    color .15s ease !important;
+}
+.library-collapse-btn:hover,
+.clean-reopen:hover{
+  transform:translateY(-1px);
+  color:#fff !important;
+  border-color:rgba(142,156,255,.28) !important;
+  background:
+    linear-gradient(180deg,rgba(34,43,64,.94),rgba(18,26,42,.92)) !important;
+}
+.collapse-icon{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:18px;
+  height:18px;
+  border-radius:50%;
+  background:rgba(255,255,255,.055);
+  color:#cfd7ff;
+  font-size:12px;
+  line-height:1;
+}
+.sidebar-head{
+  gap:14px;
+}
+.sidebar-head h2{
+  flex:1;
+}
+
+
+/* ===== Performance pass ===== */
+.fx-back{
+  filter:blur(12px) brightness(.38) saturate(1.02) !important;
+  opacity:.78 !important;
+  transform:scale(1.12) !important;
+  animation:bgDriftBack 32s ease-in-out infinite alternate !important;
+}
+.fx-mid{
+  display:none !important;
+}
+.fx-glow-1{
+  opacity:.11 !important;
+  filter:blur(22px) !important;
+  animation:glowFloat1 24s ease-in-out infinite alternate !important;
+}
+.fx-glow-2{
+  display:none !important;
+}
+.fx-vignette{
+  background:
+    radial-gradient(circle at 50% 50%,transparent 0%,rgba(4,7,14,.08) 62%,rgba(4,7,14,.38) 100%),
+    linear-gradient(180deg,rgba(5,7,13,.38),rgba(5,7,13,.08) 30%,rgba(5,7,13,.42) 100%) !important;
+}
+
+/* Backdrop blur is expensive: keep only main glass surfaces */
+.hero,.panel,.modal{
+  -webkit-backdrop-filter:blur(12px) saturate(1.04) !important;
+  backdrop-filter:blur(12px) saturate(1.04) !important;
+}
+.range-wrap,.info>div,.pill,.song-card,.keyboard-shell,.settings-panel:not(.collapsed){
+  -webkit-backdrop-filter:none !important;
+  backdrop-filter:none !important;
+}
+
+/* Lighter shadows */
+.panel{
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.06),
+    0 12px 30px rgba(0,0,0,.24) !important;
+}
+.keyboard-shell{
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.05),
+    0 14px 34px rgba(0,0,0,.22) !important;
+}
+.key.target{
+  box-shadow:
+    0 0 0 2px rgba(87,255,198,.24),
+    0 0 16px rgba(68,255,188,.52),
+    0 4px 0 rgba(0,0,0,.18) !important;
+}
+.key.active{
+  box-shadow:
+    0 0 16px rgba(108,126,255,.48),
+    inset 0 0 10px rgba(255,255,255,.12) !important;
+}
+.current{
+  text-shadow:
+    0 0 8px rgba(143,247,255,.55),
+    0 0 24px rgba(71,219,255,.32) !important;
+}
+.current.pulse{
+  text-shadow:
+    0 0 10px rgba(213,255,255,.76),
+    0 0 30px rgba(110,240,255,.46) !important;
+}
+.seq-item.current{
+  text-shadow:
+    0 0 8px rgba(255,255,255,.4),
+    0 0 18px rgba(156,166,255,.36) !important;
+}
+
+/* Button icon alignment */
+button{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+}
+.btn-icon{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:1.15em;
+  opacity:.95;
+}
+.song-title::before{
+  content:"🎵";
+  margin-right:7px;
+  font-size:13px;
+}
+.song-meta span:first-child::before{
+  content:"🏷 ";
+}
+.song-meta span:last-child::before{
+  content:"⏱ ";
+}
+
+
+@media (prefers-reduced-motion: reduce){
+  .fx-back,.fx-glow-1{animation:none !important}
+  .sequence-track{transition:none !important}
+  .current,.key,.seq-item{transition:none !important}
+}
+
+
+/* ===== Opaque Glassmorphism pass ===== */
+:root{
+  --glass-strong: rgba(20, 24, 30, 0.88);
+  --glass-strong-2: rgba(13, 17, 23, 0.84);
+  --glass-card: rgba(24, 28, 35, 0.86);
+  --glass-line: rgba(255,255,255,0.13);
+  --glass-line-soft: rgba(255,255,255,0.08);
+}
+
+.hero,.panel,.modal,
+.song-card,.range-wrap,.info>div,.pill,.keyboard-shell,
+.settings-panel:not(.collapsed),.library-collapse-btn,.clean-reopen{
+  background-image: none !important;
+}
+
+.panel{
+  background:
+    linear-gradient(180deg, var(--glass-strong), var(--glass-strong-2)) !important;
+  border: 1px solid var(--glass-line) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.11),
+    inset 0 -1px 0 rgba(255,255,255,.03),
+    0 16px 40px rgba(0,0,0,.28) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(1.02) !important;
+  backdrop-filter: blur(18px) saturate(1.02) !important;
+}
+
+.panel::before{
+  content:"";
+  position:absolute;
+  inset:1px 1px auto 1px;
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.18),transparent);
+  pointer-events:none;
+}
+
+.song-card,
+.range-wrap,
+.info>div,
+.pill,
+.settings-panel:not(.collapsed),
+.modal{
+  background:
+    linear-gradient(180deg, rgba(31,36,44,.88), rgba(22,26,32,.84)) !important;
+  border:1px solid var(--glass-line-soft) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.06),
+    0 8px 20px rgba(0,0,0,.16) !important;
+  -webkit-backdrop-filter: blur(14px) saturate(1.01) !important;
+  backdrop-filter: blur(14px) saturate(1.01) !important;
+}
+
+.song-card:hover{
+  background:
+    linear-gradient(180deg, rgba(38,43,52,.92), rgba(27,31,39,.90)) !important;
+  border-color: rgba(255,255,255,.14) !important;
+}
+.song-card.active{
+  background:
+    linear-gradient(180deg, rgba(42,47,58,.94), rgba(29,34,42,.91)) !important;
+  border-color: rgba(180,190,210,.26) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.08),
+    0 0 0 1px rgba(255,255,255,.04),
+    0 10px 24px rgba(0,0,0,.18) !important;
+}
+
+.keyboard-shell{
+  background:
+    linear-gradient(180deg, rgba(18,22,29,.90), rgba(10,13,18,.92)) !important;
+  border:1px solid rgba(255,255,255,.11) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.08),
+    inset 0 -1px 0 rgba(255,255,255,.03),
+    0 18px 42px rgba(0,0,0,.24) !important;
+  -webkit-backdrop-filter: blur(14px) saturate(1.02) !important;
+  backdrop-filter: blur(14px) saturate(1.02) !important;
+}
+
+.library-collapse-btn,
+.clean-reopen{
+  background:
+    linear-gradient(180deg, rgba(34,39,47,.92), rgba(23,27,34,.90)) !important;
+  border:1px solid rgba(255,255,255,.12) !important;
+  color:#edf2fa !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.08),
+    0 6px 18px rgba(0,0,0,.18) !important;
+  -webkit-backdrop-filter: blur(14px) saturate(1.02) !important;
+  backdrop-filter: blur(14px) saturate(1.02) !important;
+}
+.library-collapse-btn:hover,
+.clean-reopen:hover{
+  background:
+    linear-gradient(180deg, rgba(42,47,57,.95), rgba(28,33,41,.93)) !important;
+  border-color: rgba(255,255,255,.17) !important;
+}
+
+.collapse-icon{
+  background: rgba(255,255,255,.08) !important;
+  color:#f4f7fb !important;
+}
+
+input,textarea,select{
+  background: rgba(14,17,22,.82) !important;
+  border:1px solid rgba(255,255,255,.10) !important;
+  color: var(--text) !important;
+}
+input:focus,textarea:focus,select:focus{
+  border-color: rgba(195,205,225,.28) !important;
+  box-shadow: 0 0 0 3px rgba(255,255,255,.05) !important;
+}
+
+.settings-panel:not(.collapsed){
+  background:
+    linear-gradient(180deg, rgba(24,29,36,.90), rgba(16,20,26,.88)) !important;
+}
+
+.status .pill{
+  background:
+    linear-gradient(180deg, rgba(25,29,36,.78), rgba(14,18,24,.76)) !important;
+}
+
+.simple-title h1{
+  color:#f6f8fb !important;
+  text-shadow:
+    0 0 10px rgba(255,255,255,.08),
+    0 0 24px rgba(255,255,255,.04) !important;
+}
+
+
+/* ===== Static background / aligned layout / stronger opaque glass ===== */
+.particle-canvas{display:none !important}
+.fx-mid,.fx-glow-1,.fx-glow-2{display:none !important}
+.fx-back{
+  animation:none !important;
+  transform:scale(1.08) !important;
+  filter:blur(10px) brightness(.34) saturate(.95) !important;
+  opacity:.78 !important;
+}
+.fx-vignette{
+  background:
+    radial-gradient(circle at 50% 48%,transparent 0%,rgba(4,7,14,.10) 55%,rgba(4,7,14,.48) 100%),
+    linear-gradient(180deg,rgba(4,6,11,.48),rgba(4,6,11,.18) 34%,rgba(4,6,11,.55) 100%) !important;
+}
+
+/* exact same width for library + practice window */
+.main{
+  width:100% !important;
+  max-width:1320px !important;
+  margin:0 auto !important;
+}
+.main>aside.panel,
+.main>main.panel{
+  width:100% !important;
+  max-width:1320px !important;
+  margin-left:auto !important;
+  margin-right:auto !important;
+}
+
+/* stronger opaque smoky glass */
+.panel{
+  background:
+    linear-gradient(180deg,rgba(20,23,29,.97),rgba(11,14,19,.965)) !important;
+  border:1px solid rgba(255,255,255,.14) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.10),
+    inset 0 -1px 0 rgba(255,255,255,.025),
+    0 16px 38px rgba(0,0,0,.30) !important;
+  -webkit-backdrop-filter:blur(8px) !important;
+  backdrop-filter:blur(8px) !important;
+}
+.song-card,
+.range-wrap,
+.info>div,
+.pill,
+.settings-panel:not(.collapsed),
+.modal{
+  background:
+    linear-gradient(180deg,rgba(29,33,40,.96),rgba(18,21,27,.955)) !important;
+  border:1px solid rgba(255,255,255,.09) !important;
+  -webkit-backdrop-filter:none !important;
+  backdrop-filter:none !important;
+}
+.keyboard-shell{
+  background:
+    linear-gradient(180deg,rgba(14,17,22,.975),rgba(7,10,14,.98)) !important;
+  border:1px solid rgba(255,255,255,.11) !important;
+  -webkit-backdrop-filter:none !important;
+  backdrop-filter:none !important;
+}
+
+/* keep note lane fixed; only track moves */
+.sequence-stage{
+  overflow:hidden !important;
+}
+.sequence-viewport{
+  position:relative !important;
+  height:116px !important;
+  overflow:hidden !important;
+  contain:layout paint size !important;
+}
+.sequence-track{
+  position:absolute !important;
+  left:0 !important;
+  top:0 !important;
+  height:116px !important;
+  width:max-content !important;
+  display:flex !important;
+  align-items:center !important;
+  gap:34px !important;
+  padding:0 !important;
+  margin:0 !important;
+  will-change:transform !important;
+  transition:transform .42s cubic-bezier(.22,.61,.36,1) !important;
+}
+
+
+/* ===== True transparent glassmorphism ===== */
+:root{
+  --glass-bg:rgba(15,20,28,.42);
+  --glass-bg-2:rgba(10,14,20,.34);
+  --glass-card:rgba(19,24,33,.38);
+  --glass-border:rgba(255,255,255,.16);
+  --glass-highlight:rgba(255,255,255,.12);
+}
+
+.panel{
+  background:
+    linear-gradient(180deg,var(--glass-bg),var(--glass-bg-2)) !important;
+  border:1px solid var(--glass-border) !important;
+  box-shadow:
+    inset 0 1px 0 var(--glass-highlight),
+    inset 0 -1px 0 rgba(255,255,255,.025),
+    0 18px 44px rgba(0,0,0,.22) !important;
+  -webkit-backdrop-filter:blur(24px) saturate(1.12) !important;
+  backdrop-filter:blur(24px) saturate(1.12) !important;
+}
+
+.panel::before{
+  content:"";
+  position:absolute;
+  inset:1px 1px auto 1px;
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.24),transparent);
+  pointer-events:none;
+}
+
+.song-card,
+.range-wrap,
+.info>div,
+.pill,
+.settings-panel:not(.collapsed),
+.modal{
+  background:
+    linear-gradient(180deg,rgba(23,29,39,.42),rgba(14,19,27,.34)) !important;
+  border:1px solid rgba(255,255,255,.11) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.055),
+    0 8px 20px rgba(0,0,0,.12) !important;
+  -webkit-backdrop-filter:blur(16px) saturate(1.08) !important;
+  backdrop-filter:blur(16px) saturate(1.08) !important;
+}
+
+.song-card:hover{
+  background:
+    linear-gradient(180deg,rgba(30,37,48,.52),rgba(18,23,32,.44)) !important;
+}
+.song-card.active{
+  background:
+    linear-gradient(180deg,rgba(34,42,54,.56),rgba(20,26,36,.46)) !important;
+  border-color:rgba(190,205,235,.22) !important;
+}
+
+.keyboard-shell{
+  background:
+    linear-gradient(180deg,rgba(12,17,24,.46),rgba(7,11,17,.40)) !important;
+  border:1px solid rgba(255,255,255,.12) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.075),
+    0 18px 40px rgba(0,0,0,.18) !important;
+  -webkit-backdrop-filter:blur(20px) saturate(1.08) !important;
+  backdrop-filter:blur(20px) saturate(1.08) !important;
+}
+
+input,textarea,select{
+  background:rgba(8,12,18,.46) !important;
+  border:1px solid rgba(255,255,255,.11) !important;
+  -webkit-backdrop-filter:blur(10px) !important;
+  backdrop-filter:blur(10px) !important;
+}
+
+/* Same-direction top controls */
+.top-control-row{
+  display:flex;
+  justify-content:flex-end;
+  align-items:center;
+  gap:8px;
+  min-height:42px;
+  margin-bottom:10px;
+}
+.glass-action{
+  display:inline-flex !important;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  min-height:36px;
+  padding:8px 12px !important;
+  border-radius:999px !important;
+  border:1px solid rgba(255,255,255,.13) !important;
+  background:
+    linear-gradient(180deg,rgba(30,37,49,.48),rgba(17,23,32,.40)) !important;
+  color:#eef3fb !important;
+  font-size:12px !important;
+  font-weight:800 !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.08),
+    0 6px 18px rgba(0,0,0,.13) !important;
+  -webkit-backdrop-filter:blur(16px) saturate(1.08) !important;
+  backdrop-filter:blur(16px) saturate(1.08) !important;
+  transition:transform .15s ease,background .15s ease,border-color .15s ease !important;
+}
+.glass-action:hover{
+  transform:translateY(-1px);
+  background:
+    linear-gradient(180deg,rgba(40,49,64,.58),rgba(23,30,42,.50)) !important;
+  border-color:rgba(255,255,255,.19) !important;
+}
+.library-collapse-btn{
+  width:auto !important;
+  height:auto !important;
+}
+.clean-reopen,.library-reopen{
+  display:inline-flex !important;
+}
+.collapse-icon{
+  width:18px;
+  height:18px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:50%;
+  background:rgba(255,255,255,.07) !important;
+  color:#f3f6fb !important;
+}
+
+/* When library is open, hide duplicate opener in main controls. */
+/* ===== Unified settings + library toggle ===== */
+.top-control-row{
+  display:flex;
+  justify-content:flex-end;
+  align-items:center;
+  gap:8px;
+  min-height:42px;
+  margin-bottom:10px;
+}
+.workspace-toggle{
+  min-width:190px;
+}
+.main.library-hidden>aside.panel{
+  display:none !important;
+}
+.main.library-hidden>main.panel{
+  width:100% !important;
+  max-width:1320px !important;
+  margin:0 auto !important;
+}
+
+
+.song-source{
+  margin-left:auto;
+  padding:2px 7px;
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:999px;
+  font-size:10px;
+  opacity:.72;
+  white-space:nowrap;
+}
+.song-meta{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+</style>
+</head>
+<body>
+<div class="fx-bg" aria-hidden="true">
+  <div class="fx-layer fx-back"></div>
+  <div class="fx-layer fx-mid"></div>
+  <div class="fx-glow fx-glow-1"></div>
+  <div class="fx-glow fx-glow-2"></div>
+  <div class="fx-vignette"></div>
+  <canvas id="particleCanvas" class="particle-canvas"></canvas>
+</div>
+<div class="app">
+  <header class="simple-title">
+    <h1>딘의 피아노 연습기계</h1>
+  </header>
+
+  <div class="main library-hidden">
+    <aside class="panel">
+      <div class="sidebar-head">
+        <h2>곡 라이브러리</h2>
+        
+      </div>
+      <div class="library-toolbar">
+        <input id="search" placeholder="제목 / 리스트 검색">
+        <button id="newSong" class="primary"><span class="btn-icon">＋</span>곡 추가</button>
+      </div>
+      <div class="buttons" style="margin-bottom:10px">
+        <button id="importTxt" class="ghost"><span class="btn-icon">📂</span>TXT 불러오기</button>
+        <button id="exportAll" class="ghost"><span class="btn-icon">💾</span>전체 백업</button>
+        <input id="fileInput" type="file" accept=".txt,text/plain" class="hidden" multiple>
+      </div>
+      <div id="songList" class="song-list"></div>
+    </aside>
+
+    <main class="panel">
+      
+
+      <div class="top-control-row">
+        <button id="workspaceToggle" class="glass-action workspace-toggle" type="button">
+          <span class="btn-icon">⚙</span>
+          <span class="workspace-label">설정 · 라이브러리 열기</span>
+        </button>
+      </div>
+
+      <div id="settingsPanel" class="settings-panel collapsed">
+      <div class="grid2">
+        <div>
+          <label>곡 제목</label>
+          <input id="title" placeholder="예: Canon">
+        </div>
+        <div>
+          <label>리스트 / 분류</label>
+          <input id="category" placeholder="예: J-POP / 연습곡 / 애니">
+        </div>
+      </div>
+
+      <div style="margin-top:12px">
+        <label>Roblox 악보</label>
+        <textarea id="sheet" placeholder="q w e r&#10;[qwer] q-w e--"></textarea>
+      </div>
+
+      <div class="grid2" style="margin-top:12px">
+        <div>
+          <label>BPM</label>
+          <input id="bpm" type="number" min="30" max="300" value="120">
+        </div>
+        <div>
+          <label>기본 박자</label>
+          <select id="unit">
+            <option value="1">4분음표</option>
+            <option value="0.5">8분음표</option>
+            <option value="0.25">16분음표</option>
+          </select>
+        </div>
+      </div>
+      <div class="audio-controls">
+        <div class="range-wrap">
+          <div class="range-head">
+            <label for="volume">볼륨</label>
+            <span id="volumeValue" class="range-value">82%</span>
+          </div>
+          <input id="volume" type="range" min="0" max="100" value="82">
+        </div>
+        <div class="range-wrap">
+          <div class="range-head">
+            <label for="reverb">잔향</label>
+            <span id="reverbValue" class="range-value">28%</span>
+          </div>
+          <input id="reverb" type="range" min="0" max="60" value="28">
+        </div>
+      </div>
+
+      <div class="buttons" style="margin-top:12px">
+        <button id="saveSong" class="primary"><span class="btn-icon">💾</span>곡 저장</button>
+        <button id="saveTxt" class="ghost"><span class="btn-icon">📄</span>TXT 저장</button>
+        <button id="deleteSong" class="danger"><span class="btn-icon">🗑</span>삭제</button>
+      </div>
+
+      <div class="top-actions">
+        <button id="play" class="primary"><span class="btn-icon">▶</span>재생</button>
+        <button id="pause" class="ghost"><span class="btn-icon">⏸</span>일시정지</button>
+        <button id="stop" class="ghost"><span class="btn-icon">■</span>정지</button>
+        <button id="slower" class="ghost"><span class="btn-icon">−</span>느리게</button>
+        <button id="faster" class="ghost"><span class="btn-icon">＋</span>빠르게</button>
+      </div>
+
+      </div>
+
+      <div class="status">
+        <div>
+          <div class="small">현재 음</div>
+          <div id="current" class="current">—</div>
+        </div>
+        <div class="pill">진행<br><b id="count">0 / 0</b></div>
+        <div class="pill">상태<br><b id="status">대기</b></div>
+        <div class="pill">BPM<br><b id="bpmView">120</b></div>
+      </div>
+
+      <div class="progress"><div id="progress"></div></div>
+
+      <div class="sequence-stage">
+        <div class="sequence-label">연주 진행</div>
+        <div class="sequence-viewport" id="sequenceViewport">
+          <div class="sequence-track" id="sequenceTrack"></div>
+        </div>
+        <div class="sequence-marker"></div>
+        <div id="practiceFeedback" class="practice-feedback">직접 연주하면 악보가 진행됩니다.</div>
+      </div>
+
+
+
+      <div class="info">
+        <div><div class="small">다음 음</div><div id="nextNote" class="v">—</div></div>
+        <div><div class="small">누르는 키</div><div id="held" class="v">—</div></div>
+        <div><div class="small">선택 곡</div><div id="selectedSong" class="v">새 곡</div></div>
+      </div>
+
+      <div class="keyboard-shell" id="keyboard"></div>
+
+      <div class="hint" style="margin-top:12px">
+        <b>표기:</b> <code>[qwer]</code> 동시 연주 · <code>q-w</code> 1.5박 · <code>q--</code> 2박 ·
+        숫자열부터 <code>1=C2</code>, <code>t=C4</code>, <code>m=C7</code> Roblox 표준 배열을 사용합니다.
+        대문자/Shift 기호는 검은건반입니다. 느리게/빠르게 버튼은 BPM을 5씩 조절합니다. 곡을 저장하면 브라우저 안에 자동 보관됩니다.
+      </div>
+    </main>
+  </div>
+</div>
+
+
+<div id="songModal" class="modal-backdrop hidden" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="songModalTitle">
+    <h2 id="songModalTitle">새 곡 추가</h2>
+
+    <div class="modal-grid">
+      <div>
+        <label for="modalSongTitle">곡 제목</label>
+        <input id="modalSongTitle" placeholder="예: Canon">
+      </div>
+      <div>
+        <label for="modalSongCategory">리스트 / 분류</label>
+        <input id="modalSongCategory" placeholder="예: J-POP / 연습곡">
+      </div>
+      <div>
+        <label for="modalSongBpm">BPM</label>
+        <input id="modalSongBpm" type="number" min="30" max="300" value="120">
+      </div>
+      <div>
+        <label for="modalSongUnit">기본 박자</label>
+        <select id="modalSongUnit">
+          <option value="1">4분음표</option>
+          <option value="0.5">8분음표</option>
+          <option value="0.25">16분음표</option>
+        </select>
+      </div>
+    </div>
+
+    <div style="margin-top:12px">
+      <label for="modalSongSheet">Roblox 악보</label>
+      <textarea id="modalSongSheet" placeholder="q w e r&#10;[qwer] q-w e--"></textarea>
+    </div>
+
+    <div class="modal-actions">
+      <button id="cancelSongModal" class="ghost" type="button"><span class="btn-icon">✕</span>취소</button>
+      <button id="saveSongModal" class="primary" type="button"><span class="btn-icon">✓</span>저장하고 연습</button>
+    </div>
+  </div>
+</div>
+
+<script src="./acoustic_grand_piano-ogg.js"></script>
+<script>
+const STORAGE_KEY='robloxPianoSongs_v2';
+
+const KEY_TO_NOTE={
+ '1':'C2','!':'Db2','2':'D2','@':'Eb2','3':'E2','4':'F2','$':'Gb2','5':'G2','%':'Ab2','6':'A2','^':'Bb2','7':'B2',
+ '8':'C3','*':'Db3','9':'D3','(':'Eb3','0':'E3',
+ 'q':'F3','Q':'Gb3','w':'G3','W':'Ab3','e':'A3','E':'Bb3','r':'B3',
+ 't':'C4','T':'Db4','y':'D4','Y':'Eb4','u':'E4','i':'F4','I':'Gb4','o':'G4','O':'Ab4','p':'A4','P':'Bb4','a':'B4',
+ 's':'C5','S':'Db5','d':'D5','D':'Eb5','f':'E5','g':'F5','G':'Gb5','h':'G5','H':'Ab5','j':'A5','J':'Bb5','k':'B5',
+ 'l':'C6','L':'Db6','z':'D6','Z':'Eb6','x':'E6','c':'F6','C':'Gb6','v':'G6','V':'Ab6','b':'A6','B':'Bb6','n':'B6','m':'C7'
+};
+
+const rows=[
+ [['Esc','dark w70'],['1','playable'],['2','playable'],['3','playable'],['4','playable'],['5','playable'],['6','playable'],['7','playable'],['8','playable'],['9','playable'],['0','playable'],['-','dark'],['=','dark'],['Backspace','dark w100']],
+ [['Tab','dark w70'],['q','playable'],['w','playable'],['e','playable'],['r','playable'],['t','playable'],['y','playable'],['u','playable'],['i','playable'],['o','playable'],['p','playable'],['[','dark'],[']','dark'],['\\','dark w70']],
+ [['Caps','dark w85'],['a','playable'],['s','playable'],['d','playable'],['f','playable'],['g','playable'],['h','playable'],['j','playable'],['k','playable'],['l','playable'],[';','dark'],["'","dark"],['Enter','dark w100']],
+ [['Shift','dark w120'],['z','playable'],['x','playable'],['c','playable'],['v','playable'],['b','playable'],['n','playable'],['m','playable'],[',','dark'],['.','dark'],['/','dark'],['Shift','dark w140']]
+];
+
+const $=s=>document.querySelector(s);
+const E={
+ search:$('#search'),newSong:$('#newSong'),importTxt:$('#importTxt'),exportAll:$('#exportAll'),fileInput:$('#fileInput'),
+ songList:$('#songList'),title:$('#title'),category:$('#category'),sheet:$('#sheet'),bpm:$('#bpm'),unit:$('#unit'),volume:$('#volume'),volumeValue:$('#volumeValue'),reverb:$('#reverb'),reverbValue:$('#reverbValue'),
+ workspaceToggle:$('#workspaceToggle'),settingsPanel:$('#settingsPanel'),
+ songModal:$('#songModal'),modalSongTitle:$('#modalSongTitle'),modalSongCategory:$('#modalSongCategory'),
+ modalSongBpm:$('#modalSongBpm'),modalSongUnit:$('#modalSongUnit'),modalSongSheet:$('#modalSongSheet'),
+ cancelSongModal:$('#cancelSongModal'),saveSongModal:$('#saveSongModal'),
+ sequenceViewport:$('#sequenceViewport'),sequenceTrack:$('#sequenceTrack'),practiceFeedback:$('#practiceFeedback'),
+ saveSong:$('#saveSong'),saveTxt:$('#saveTxt'),deleteSong:$('#deleteSong'),current:$('#current'),count:$('#count'),
+ status:$('#status'),bpmView:$('#bpmView'),progress:$('#progress'),play:$('#play'),pause:$('#pause'),stop:$('#stop'),
+ slower:$('#slower'),faster:$('#faster'),nextNote:$('#nextNote'),held:$('#held'),selectedSong:$('#selectedSong'),keyboard:$('#keyboard')
+};
+
+let songs=[],localSongs=[],builtinSongs=[],selectedId=null,seq=[],idx=0,playing=false,timer=null,practiceMatched=new Set(),advanceLock=false;
+let ac=null,master=null,dryGain=null,wetGain=null,convolver=null,buffers=new Map(),voices=new Map(),pressed=new Set(),keyEls=new Map();
+
+function uid(){return 's_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,8)}
+function nowISO(){return new Date().toISOString()}
+function sanitizeFilename(s){return (s||'song').replace(/[\\/:*?"<>|]+/g,'_').trim()||'song'}
+
+function songKey(s){
+ return String(s.id || `${s.title||''}|${s.category||''}`).trim().toLowerCase();
+}
+function rebuildLibrary(){
+ const merged=new Map();
+ builtinSongs.forEach(s=>merged.set(songKey(s),{...s,_source:'builtin'}));
+ localSongs.forEach(s=>merged.set(songKey(s),{...s,_source:'local'}));
+ songs=[...merged.values()];
+}
+async function loadLibrary(){
+ try{
+   localSongs=JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');
+   if(!Array.isArray(localSongs))localSongs=[];
+ }catch{localSongs=[]}
+
+ try{
+   const res=await fetch('./songs.json',{cache:'no-store'});
+   if(res.ok){
+     const data=await res.json();
+     builtinSongs=Array.isArray(data)?data:[];
+     builtinSongs=builtinSongs.map((s,i)=>({
+       id:String(s.id||`builtin_${i+1}`),
+       title:s.title||'제목 없음',
+       category:s.category||'',
+       sheet:s.sheet||'',
+       bpm:Math.max(30,Math.min(300,parseInt(s.bpm)||120)),
+       unit:String(s.unit||'1'),
+       ...s,
+       _source:'builtin'
+     }));
+   }else{
+     builtinSongs=[];
+   }
+ }catch(err){
+   // file://로 직접 열 때 fetch가 막혀도 개인 저장곡은 정상 사용 가능.
+   builtinSongs=[];
+   console.info('songs.json은 GitHub Pages/웹서버에서 자동 로드됩니다.',err);
+ }
+
+ rebuildLibrary();
+ renderLibrary();
+ if(songs.length)selectSong(songs[0].id);
+ else newSong();
+}
+function persist(){
+ localStorage.setItem(STORAGE_KEY,JSON.stringify(localSongs));
+ rebuildLibrary();
+}
+function renderLibrary(){
+ const q=E.search.value.trim().toLowerCase();
+ const list=songs.filter(s=>!q || (s.title+' '+s.category).toLowerCase().includes(q));
+ E.songList.innerHTML='';
+ if(!list.length){E.songList.innerHTML='<div class="empty">저장된 곡이 없습니다.</div>';return}
+ list.forEach(s=>{
+   const d=document.createElement('div');
+   d.className='song-card'+(s.id===selectedId?' active':'');
+   d.innerHTML='<div class="song-title"></div><div class="song-meta"><span></span><span></span><span class="song-source"></span></div>';
+   d.querySelector('.song-title').textContent=s.title||'제목 없음';
+   const spans=d.querySelectorAll('.song-meta span');
+   spans[0].textContent=s.category||'미분류';
+   spans[1].textContent=(s.bpm||120)+' BPM';
+   spans[2].textContent=s._source==='builtin'?'기본곡':'내 곡';
+   spans[2].title=s._source==='builtin'?'songs.json에서 불러온 기본곡':'이 브라우저에 저장된 개인곡';
+   d.addEventListener('click',()=>selectSong(s.id));
+   E.songList.appendChild(d);
+ });
+}
+function newSong(){
+ selectedId=null;E.title.value='';E.category.value='';E.sheet.value='';E.bpm.value=120;E.unit.value='1';
+ E.selectedSong.textContent='새 곡';idx=0;parseSheet();renderLibrary();E.title.focus();
+}
+
+function openSongModal(){
+ E.modalSongTitle.value='';
+ E.modalSongCategory.value='';
+ E.modalSongBpm.value=120;
+ E.modalSongUnit.value='1';
+ E.modalSongSheet.value='';
+ E.songModal.classList.remove('hidden');
+ E.songModal.setAttribute('aria-hidden','false');
+ setTimeout(()=>E.modalSongTitle.focus(),0);
+}
+
+function closeSongModal(){
+ E.songModal.classList.add('hidden');
+ E.songModal.setAttribute('aria-hidden','true');
+}
+
+function saveSongFromModal(){
+ const title=E.modalSongTitle.value.trim();
+ if(!title){
+   alert('곡 제목을 입력해주세요.');
+   E.modalSongTitle.focus();
+   return;
+ }
+ const bpm=Math.max(30,Math.min(300,parseInt(E.modalSongBpm.value)||120));
+ const song={
+   id:uid(),
+   title,
+   category:E.modalSongCategory.value.trim(),
+   sheet:E.modalSongSheet.value,
+   bpm,
+   unit:E.modalSongUnit.value||'1',
+   createdAt:nowISO(),
+   updatedAt:nowISO()
+ };
+ localSongs.unshift(song);
+ selectedId=song.id;
+ persist();
+ closeSongModal();
+ renderLibrary();
+ selectSong(song.id);
+ E.status.textContent='새 곡 저장됨';
+}
+function selectSong(id){
+ const s=songs.find(x=>x.id===id);if(!s)return;
+ selectedId=id;E.title.value=s.title||'';E.category.value=s.category||'';E.sheet.value=s.sheet||'';
+ E.bpm.value=s.bpm||120;E.unit.value=s.unit||'1';E.selectedSong.textContent=s.title||'제목 없음';
+ idx=0;practiceMatched.clear();stopPlayback(false);parseSheet();renderLibrary();
+}
+function saveSong(){
+ const title=E.title.value.trim();
+ if(!title){alert('곡 제목을 입력해주세요.');E.title.focus();return}
+
+ const data={
+   title,
+   category:E.category.value.trim(),
+   sheet:E.sheet.value,
+   bpm:clampBpm(),
+   unit:E.unit.value,
+   updatedAt:nowISO()
+ };
+
+ if(selectedId){
+   const existing=songs.find(x=>x.id===selectedId);
+   const li=localSongs.findIndex(x=>x.id===selectedId);
+   if(li>=0){
+     localSongs[li]={...localSongs[li],...data,_source:undefined};
+   }else if(existing){
+     // Editing a GitHub/default song creates a browser-local override with the same id.
+     localSongs.unshift({
+       ...existing,
+       ...data,
+       id:existing.id,
+       createdAt:existing.createdAt||nowISO(),
+       _source:undefined
+     });
+   }
+ }else{
+   selectedId=uid();
+   localSongs.unshift({id:selectedId,createdAt:nowISO(),...data});
+ }
+
+ persist();
+ E.selectedSong.textContent=title;
+ renderLibrary();
+ parseSheet();
+ E.status.textContent='저장됨';
+}
+function deleteSong(){
+ if(!selectedId)return;
+ const s=songs.find(x=>x.id===selectedId);
+ if(!s)return;
+
+ const li=localSongs.findIndex(x=>x.id===selectedId);
+ if(li<0 && s._source==='builtin'){
+   alert('기본곡은 songs.json에 들어있는 공용 곡이라 브라우저에서 삭제할 수 없습니다.\nGitHub의 songs.json에서 지우면 사이트 전체에서 삭제됩니다.');
+   return;
+ }
+
+ if(!confirm(`"${s.title}" 곡을 삭제할까요?`))return;
+ localSongs=localSongs.filter(x=>x.id!==selectedId);
+ persist();
+ selectedId=null;
+ renderLibrary();
+ if(songs.length)selectSong(songs[0].id);else newSong();
+}
+function clampBpm(){const v=Math.max(30,Math.min(300,parseInt(E.bpm.value)||120));E.bpm.value=v;E.bpmView.textContent=v;return v}
+
+function songToTxt(s){
+ return [
+   '# ROBLOX_PIANO_SONG',
+   'TITLE='+encodeURIComponent(s.title||''),
+   'LIST='+encodeURIComponent(s.category||''),
+   'BPM='+(s.bpm||120),
+   'UNIT='+(s.unit||'1'),
+   '---SHEET---',
+   s.sheet||''
+ ].join('\n');
+}
+function currentFormSong(){
+ return {title:E.title.value.trim()||'제목 없음',category:E.category.value.trim(),sheet:E.sheet.value,bpm:clampBpm(),unit:E.unit.value};
+}
+function downloadText(filename,text){
+ const blob=new Blob([text],{type:'text/plain;charset=utf-8'});
+ const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),500);
+}
+function exportCurrent(){const s=currentFormSong();downloadText(sanitizeFilename(s.title)+'.txt',songToTxt(s))}
+function exportAll(){
+ const blocks=songs.map((s,i)=>`### SONG ${i+1} ###\n${songToTxt(s)}`);
+ downloadText('roblox_piano_library_backup.txt',blocks.join('\n\n'));
+}
+function parseTxt(text){
+ const chunks=text.includes('### SONG ') ? text.split(/### SONG \d+ ###\s*/).filter(Boolean) : [text];
+ const out=[];
+ for(const c of chunks){
+   if(!c.includes('# ROBLOX_PIANO_SONG'))continue;
+   const sheetSplit=c.split('---SHEET---');
+   if(sheetSplit.length<2)continue;
+   const head=sheetSplit[0],sheet=sheetSplit.slice(1).join('---SHEET---').replace(/^\s*\n?/,'');
+   const get=k=>{const m=head.match(new RegExp('^'+k+'=(.*)$','m'));return m?m[1].trim():''};
+   const dec=v=>{try{return decodeURIComponent(v)}catch{return v}};
+   out.push({id:uid(),title:dec(get('TITLE'))||'제목 없음',category:dec(get('LIST')),bpm:Math.max(30,Math.min(300,parseInt(get('BPM'))||120)),unit:get('UNIT')||'1',sheet,createdAt:nowISO(),updatedAt:nowISO()});
+ }
+ return out;
+}
+async function importFiles(files){
+ let added=[];
+ for(const f of files){const text=await f.text();added.push(...parseTxt(text))}
+ if(!added.length){alert('지원되는 Roblox Piano TXT 형식이 아닙니다.');return}
+ localSongs=[...added,...localSongs];persist();renderLibrary();selectSong(added[0].id);
+ alert(`${added.length}곡을 불러왔습니다.`);
+}
+
+function initAudio(){
+ if(!ac){
+   ac=new (window.AudioContext||window.webkitAudioContext)();
+   master=ac.createGain();
+   dryGain=ac.createGain();
+   wetGain=ac.createGain();
+   convolver=ac.createConvolver();
+
+   // Smooth generated hall-style impulse. The original OGG tail remains intact;
+   // this bus only adds controllable room tail over the same sample.
+   const seconds=3.4;
+   const rate=ac.sampleRate;
+   const length=Math.floor(rate*seconds);
+   const impulse=ac.createBuffer(2,length,rate);
+   for(let ch=0;ch<2;ch++){
+     const data=impulse.getChannelData(ch);
+     for(let i=0;i<length;i++){
+       const t=i/length;
+       const decay=Math.pow(1-t,2.35);
+       data[i]=(Math.random()*2-1)*decay;
+     }
+   }
+   convolver.buffer=impulse;
+
+   dryGain.connect(master);
+   convolver.connect(wetGain);
+   wetGain.connect(master);
+   master.connect(ac.destination);
+
+   updateAudioMix();
+ }
+ if(ac.state==='suspended')ac.resume();
+}
+
+function updateAudioMix(){
+ const volume=Math.max(0,Math.min(1,(parseFloat(E.volume?.value)||0)/100));
+ const reverb=Math.max(0,Math.min(.6,(parseFloat(E.reverb?.value)||0)/100));
+ if(master)master.gain.value=volume;
+ if(dryGain)dryGain.gain.value=1;
+ if(wetGain)wetGain.gain.value=reverb;
+ if(E.volumeValue)E.volumeValue.textContent=Math.round(volume*100)+'%';
+ if(E.reverbValue)E.reverbValue.textContent=Math.round(reverb*100)+'%';
+}
+async function getBuffer(note){
+ initAudio();if(buffers.has(note))return buffers.get(note);
+ const sf=window.MIDI&&window.MIDI.Soundfont&&window.MIDI.Soundfont.acoustic_grand_piano;
+ if(!sf||!sf[note])throw new Error('SoundFont 음원을 찾지 못했습니다: '+note);
+ const r=await fetch(sf[note]);const arr=await r.arrayBuffer();const b=await ac.decodeAudioData(arr.slice(0));buffers.set(note,b);return b;
+}
+async function noteOn(key,durationMs=null){
+ if(!KEY_TO_NOTE[key])return;
+ try{
+   const b=await getBuffer(KEY_TO_NOTE[key]);
+   const src=ac.createBufferSource(),g=ac.createGain();
+   src.buffer=b;
+   src.connect(g);
+   g.connect(dryGain);
+   g.connect(convolver);
+
+   // Keep the SoundFont sample itself intact. No artificial note-shortening envelope.
+   const n=ac.currentTime;
+   g.gain.setValueAtTime(1,n);
+
+   // 같은 키를 다시 눌러도 기존 잔향을 끊지 않고 겹쳐 울리게 한다.
+   if(!voices.has(key)) voices.set(key,new Set());
+   const voice={src,g};
+   voices.get(key).add(voice);
+
+   src.start(n);
+   keyEls.get(key)?.classList.add('active');
+   updateHeld();
+
+   // 원본 OGG 샘플은 끝날 때까지 자연스럽게 재생한다.
+   // durationMs는 키 하이라이트/악보 타이밍에만 사용하고 오디오는 자르지 않는다.
+   if(durationMs){
+     setTimeout(()=>{
+       if(!pressed.has(key)) keyEls.get(key)?.classList.remove('active');
+       updateHeld();
+     },Math.max(40,durationMs));
+   }
+
+   src.onended=()=>{
+     const set=voices.get(key);
+     if(set){
+       set.delete(voice);
+       if(set.size===0) voices.delete(key);
+     }
+     if(!pressed.has(key)) keyEls.get(key)?.classList.remove('active');
+     updateHeld();
+   };
+ }catch(err){
+   console.error(err);
+   E.status.textContent='음원 오류';
+ }
+}
+
+// 일반 키업에서는 음원을 끊지 않는다.
+// 실제 피아노처럼 이미 울린 샘플의 자연 감쇠를 그대로 남긴다.
+function release(key,ms=260){
+ if(!pressed.has(key)) keyEls.get(key)?.classList.remove('active');
+ updateHeld();
+}
+
+// 정지 버튼에서만 모든 울림을 빠르게 페이드아웃한다.
+function releaseAll(){
+ if(!ac)return;
+ const n=ac.currentTime;
+ for(const [key,set] of voices){
+   for(const voice of set){
+     try{
+       const cur=Math.max(.0001,voice.g.gain.value||.2);
+       voice.g.gain.cancelScheduledValues(n);
+       voice.g.gain.setValueAtTime(cur,n);
+       voice.g.gain.exponentialRampToValueAtTime(.0001,n+.08);
+       voice.src.stop(n+.10);
+     }catch{}
+   }
+ }
+ voices.clear();
+ keyEls.forEach(el=>el.classList.remove('active'));
+ updateHeld();
+}
+
+function updateHeld(){
+ const keys=[...pressed].map(k=>k.toUpperCase());
+ E.held.textContent=keys.length?keys.join(' + '):'—';
+}
+
+function buildKeyboard(){
+ rows.forEach(row=>{
+   const r=document.createElement('div');r.className='krow';
+   row.forEach(([cap,cls])=>{
+     const k=document.createElement('div');k.className='key '+cls;
+     const top=document.createElement('div');top.textContent=cap.toUpperCase();k.appendChild(top);
+     if(KEY_TO_NOTE[cap]){
+       const n=document.createElement('div');n.className='note';n.textContent=KEY_TO_NOTE[cap];k.appendChild(n);keyEls.set(cap,k);
+       k.addEventListener('pointerdown',()=>manualDown(cap));k.addEventListener('pointerup',()=>manualUp(cap));k.addEventListener('pointercancel',()=>manualUp(cap));
+     }
+     r.appendChild(k);
+   });
+   E.keyboard.appendChild(r);
+ });
+}
+function parseSheet(){
+ const text=E.sheet.value.replace(/\n/g,' ');
+ // Supported Roblox keys, including shifted black-note aliases.
+ const validChars="1234567890qwertyuiopasdfghjklzxcvbnm!@$%^*(QWETYIOPSDGHJLZCVB";
+ const esc=s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+ const charClass=esc(validChars);
+ const rx=new RegExp('\\[(['+charClass+']+)\\](?:-+)?|['+charClass+'](?:-+)?','g');
+ const raw=text.match(rx)||[];
+ seq=raw.map(t=>{
+   const chord=t.startsWith('[');
+   const d=(t.match(/-/g)||[]).length;
+   const inside=chord?t.slice(1,t.indexOf(']')):t[0];
+   return{raw:t,keys:[...inside].filter(k=>KEY_TO_NOTE[k]),beats:1+d*.5};
+ }).filter(x=>x.keys.length);
+ if(idx>=seq.length)idx=0;
+ practiceMatched.clear();
+ if(E.sequenceTrack)E.sequenceTrack.dataset.signature='';
+ render();
+}
+function renderSequence(){
+ if(!E.sequenceTrack || !E.sequenceViewport)return;
+
+ const signature=seq.map(x=>x.raw).join('\u0001');
+
+ // Build the note lane only when the song/score actually changes.
+ if(E.sequenceTrack.dataset.signature!==signature){
+   E.sequenceTrack.dataset.signature=signature;
+   E.sequenceTrack.innerHTML='';
+
+   if(!seq.length){
+     const empty=document.createElement('div');
+     empty.className='seq-item current';
+     empty.textContent='—';
+     empty.dataset.index='0';
+     E.sequenceTrack.appendChild(empty);
+   }else{
+     seq.forEach((s,i)=>{
+       const item=document.createElement('div');
+       item.className='seq-item future';
+       item.dataset.index=String(i);
+       item.textContent=s.raw.toUpperCase();
+       E.sequenceTrack.appendChild(item);
+     });
+   }
+
+   // First positioning should not animate in from the far left.
+   E.sequenceTrack.style.transition='none';
+ }
+
+ const items=[...E.sequenceTrack.children];
+
+ items.forEach((item,i)=>{
+   item.classList.remove('current','near','done','future');
+   const distance=Math.abs(i-idx);
+
+   if(!seq.length){
+     item.classList.add('current');
+   }else if(i===idx){
+     item.classList.add('current');
+   }else{
+     if(i<idx)item.classList.add('done');
+     if(i>idx)item.classList.add('future');
+     if(distance<=2)item.classList.add('near');
+   }
+ });
+
+ requestAnimationFrame(()=>{
+   const current=E.sequenceTrack.querySelector('.seq-item.current');
+   if(!current)return;
+
+   const viewportCenter=E.sequenceViewport.clientWidth/2;
+   const currentCenter=current.offsetLeft+current.offsetWidth/2;
+   const target=viewportCenter-currentCenter;
+
+   requestAnimationFrame(()=>{
+     E.sequenceTrack.style.transition='transform .42s cubic-bezier(.22,.61,.36,1)';
+     E.sequenceTrack.style.transform=`translate3d(${target}px,0,0)`;
+   });
+ });
+}
+
+function render(){
+ keyEls.forEach(el=>el.classList.remove('target'));const x=seq[idx];
+ if(x){
+   E.current.textContent=x.raw.toUpperCase();
+   E.nextNote.textContent=seq[idx+1]?.raw.toUpperCase()||'끝';
+   x.keys.forEach(k=>keyEls.get(k)?.classList.add('target'));
+   E.current.classList.remove('pulse');
+   void E.current.offsetWidth;
+   E.current.classList.add('pulse');
+   setTimeout(()=>E.current.classList.remove('pulse'),180);
+ }else{
+   E.current.textContent='—';
+   E.nextNote.textContent='—';
+ }
+ E.count.textContent=`${seq.length?Math.min(idx+1,seq.length):0} / ${seq.length}`;
+ E.progress.style.width=(seq.length?Math.min(100,idx/seq.length*100):0)+'%';
+ renderSequence();
+ clampBpm();
+}
+function stepMs(x){return (60000/clampBpm())*(parseFloat(E.unit.value)||1)*x.beats}
+function playStep(){
+ clearTimeout(timer);if(!playing||!seq.length)return;
+ if(idx>=seq.length){playing=false;releaseAll();E.status.textContent='완료';E.progress.style.width='100%';return}
+ render();const x=seq[idx],ms=Math.max(70,stepMs(x));E.status.textContent='재생 중';
+ x.keys.forEach(k=>noteOn(k,ms*.92));timer=setTimeout(()=>{x.keys.forEach(k=>{if(!pressed.has(k))keyEls.get(k)?.classList.remove('active')});idx++;practiceMatched.clear();playStep()},ms);
+}
+function stopPlayback(reset=true){playing=false;clearTimeout(timer);releaseAll();if(reset){idx=0;practiceMatched.clear();}render();E.status.textContent=reset?'정지':'대기';if(reset)setPracticeFeedback('현재 강조된 키를 눌러 진행하세요.');}
+
+function setPracticeFeedback(text,type=''){
+ if(!E.practiceFeedback)return;
+ E.practiceFeedback.textContent=text;
+ E.practiceFeedback.classList.remove('ok','bad','chord');
+ if(type)E.practiceFeedback.classList.add(type);
+}
+
+function advancePracticeStep(){
+ if(advanceLock)return;
+ advanceLock=true;
+
+ const old=seq[idx];
+ if(old) old.keys.forEach(k=>keyEls.get(k)?.classList.remove('target'));
+
+ idx++;
+ practiceMatched.clear();
+
+ if(idx>=seq.length){
+   idx=seq.length;
+   E.progress.style.width='100%';
+   E.current.textContent='완료';
+   E.nextNote.textContent='끝';
+   E.count.textContent=`${seq.length} / ${seq.length}`;
+   keyEls.forEach(el=>el.classList.remove('target'));
+   renderSequence();
+   setPracticeFeedback('곡 끝! 잘했어요.','ok');
+   setTimeout(()=>advanceLock=false,180);
+   return;
+ }
+
+ render();
+ setPracticeFeedback('좋아요 — 다음 음','ok');
+ setTimeout(()=>{
+   advanceLock=false;
+   if(E.practiceFeedback?.classList.contains('ok')){
+     setPracticeFeedback('현재 강조된 키를 눌러 진행하세요.');
+   }
+ },180);
+}
+
+function judgePracticeKey(k){
+ if(playing || advanceLock || !seq.length || idx>=seq.length)return;
+
+ const item=seq[idx];
+ if(!item)return;
+
+ if(!item.keys.includes(k)){
+   setPracticeFeedback(`${k.toUpperCase()} · 다른 키예요`,'bad');
+   setTimeout(()=>{
+     if(!playing) setPracticeFeedback('현재 강조된 키를 눌러 진행하세요.');
+   },420);
+   return;
+ }
+
+ practiceMatched.add(k);
+
+ // Single note: advance immediately.
+ if(item.keys.length===1){
+   advancePracticeStep();
+   return;
+ }
+
+ // Chord: accept keys in any order and advance after all required notes were pressed.
+ const remaining=item.keys.filter(x=>!practiceMatched.has(x));
+ if(remaining.length===0){
+   advancePracticeStep();
+ }else{
+   setPracticeFeedback(
+     `화음 ${practiceMatched.size}/${item.keys.length} · ${remaining.map(x=>x.toUpperCase()).join(' + ')} 남음`,
+     'chord'
+   );
+ }
+}
+
+function manualDown(k){
+ if(pressed.has(k))return;
+ pressed.add(k);
+ noteOn(k);
+ judgePracticeKey(k);
+}
+
+function manualUp(k){pressed.delete(k);keyEls.get(k)?.classList.remove('active');updateHeld()}
+
+E.saveSong.addEventListener('click',saveSong);E.deleteSong.addEventListener('click',deleteSong);
+E.newSong.addEventListener('click',openSongModal);E.search.addEventListener('input',renderLibrary);
+
+
+E.workspaceToggle.addEventListener('click',()=>{
+ const main=document.querySelector('.main');
+ const opening=main.classList.contains('library-hidden') || E.settingsPanel.classList.contains('collapsed');
+
+ if(opening){
+   main.classList.remove('library-hidden');
+   E.settingsPanel.classList.remove('collapsed');
+ }else{
+   main.classList.add('library-hidden');
+   E.settingsPanel.classList.add('collapsed');
+ }
+
+ const label=E.workspaceToggle.querySelector('.workspace-label');
+ const icon=E.workspaceToggle.querySelector('.btn-icon');
+
+ if(label)label.textContent=opening?'설정 · 라이브러리 닫기':'설정 · 라이브러리 열기';
+ if(icon)icon.textContent=opening?'✕':'⚙';
+});
+
+E.cancelSongModal.addEventListener('click',closeSongModal);
+E.saveSongModal.addEventListener('click',saveSongFromModal);
+E.songModal.addEventListener('pointerdown',e=>{
+ if(e.target===E.songModal)closeSongModal();
+});
+window.addEventListener('keydown',e=>{
+ if(e.key==='Escape'&&!E.songModal.classList.contains('hidden')){
+   closeSongModal();
+ }
+});
+E.saveTxt.addEventListener('click',exportCurrent);E.exportAll.addEventListener('click',exportAll);
+E.importTxt.addEventListener('click',()=>E.fileInput.click());E.fileInput.addEventListener('change',()=>{importFiles([...E.fileInput.files]);E.fileInput.value=''});
+E.play.addEventListener('click',()=>{parseSheet();if(!seq.length){E.status.textContent='악보 없음';return}playing=true;practiceMatched.clear();setPracticeFeedback('자동 재생 중');initAudio();playStep()});
+E.pause.addEventListener('click',()=>{playing=false;clearTimeout(timer);practiceMatched.clear();E.status.textContent='직접 연습';setPracticeFeedback('직접 눌러서 이어서 진행할 수 있어요.');});
+E.stop.addEventListener('click',()=>stopPlayback(true));
+E.slower.addEventListener('click',()=>{
+  const cur=clampBpm();
+  E.bpm.value=Math.max(30,cur-5);
+  clampBpm();
+  E.status.textContent='속도 ↓';
+  if(playing){clearTimeout(timer);playStep()}
+});
+E.faster.addEventListener('click',()=>{
+  const cur=clampBpm();
+  E.bpm.value=Math.min(300,cur+5);
+  clampBpm();
+  E.status.textContent='속도 ↑';
+  if(playing){clearTimeout(timer);playStep()}
+});
+E.sheet.addEventListener('input',()=>{if(!playing){idx=0;parseSheet()}});E.bpm.addEventListener('input',clampBpm);
+
+window.addEventListener('keydown',e=>{
+ if(['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName))return;
+ const k=e.key;
+ if(KEY_TO_NOTE[k]&&!e.repeat){e.preventDefault();manualDown(k)}
+});
+window.addEventListener('keyup',e=>{const k=e.key;if(KEY_TO_NOTE[k])manualUp(k)});
+
+E.volume.addEventListener('input',()=>{initAudio();updateAudioMix()});
+E.reverb.addEventListener('input',()=>{initAudio();updateAudioMix()});
+updateAudioMix();
+
+buildKeyboard();loadLibrary();clampBpm();renderSequence();setPracticeFeedback('현재 강조된 키를 눌러 진행하세요.');
+</script>
+
+
+
+</body>
+</html>
