@@ -3166,6 +3166,33 @@ body:not(.settings-open) #workspaceToggle.open{
   text-transform:none !important;
 }
 
+
+/* Compact SheetMusicGo notation */
+.seq-item,.current,.key .cap{
+  font-variant-ligatures:none !important;
+}
+.seq-item{
+  white-space:nowrap !important;
+}
+
+
+/* ===== Live hold countdown visibility ===== */
+.hold-timer{
+  min-width:88px !important;
+  font-weight:900 !important;
+  opacity:1 !important;
+}
+.hold-timer:not(:empty){
+  padding:3px 8px !important;
+  border-radius:999px !important;
+  background:rgba(255,190,95,.10) !important;
+  border:1px solid rgba(255,196,112,.18) !important;
+}
+.hold-timer.done{
+  background:rgba(89,235,178,.10) !important;
+  border-color:rgba(89,235,178,.20) !important;
+}
+
 </style>
 </head>
 <body>
@@ -3424,7 +3451,7 @@ const E={
  slower:$('#slower'),faster:$('#faster'),nextNote:$('#nextNote'),held:$('#held'),selectedSong:$('#selectedSong'),keyboard:$('#keyboard')
 };
 
-let songs=[],localSongs=[],builtinSongs=[],selectedId=null,seq=[],scoreSeq=[],idx=0,playing=false,timer=null,practiceMatched=new Set(),advanceLock=false,practiceOrderPos=0,holdStart=0,holdKey=null,displayUppercase=false,holdTimerRaf=0;
+let songs=[],localSongs=[],builtinSongs=[],selectedId=null,seq=[],scoreSeq=[],idx=0,playing=false,timer=null,practiceMatched=new Set(),advanceLock=false,practiceOrderPos=0,holdStart=0,holdKey=null,holdKeys=new Set(),displayUppercase=false,holdTimerRaf=0;
 let ac=null,master=null,dryGain=null,wetGain=null,convolver=null,buffers=new Map(),voices=new Map(),pressed=new Set(),keyEls=new Map();
 
 function uid(){return 's_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,8)}
@@ -3850,9 +3877,56 @@ function buildKeyboard(){
 }
 function parseSheet(){
  const text=E.sheet.value.replace(/\r/g,'').replace(/\n/g,' ');
- const validChars="1234567890qwertyuiopasdfghjklzxcvbnm!@$%^*(QWETYIOPSDGHJLZCVB";
- const isKey=c=>validChars.includes(c)&&!!KEY_TO_NOTE[c];
+ const isKey=c=>typeof c==='string' && !!KEY_TO_NOTE[c];
  scoreSeq=[];
+
+ function applyTrailingTiming(item,pos){
+   let i=pos;
+   let dashCount=0;
+   let dotCount=0;
+
+   while(text[i]==='-'){
+     dashCount++;
+     i++;
+   }
+   while(text[i]==='.'){
+     dotCount++;
+     i++;
+   }
+
+   item.dashCount=dashCount;
+   item.dotCount=dotCount;
+
+   // Compact sheets: a trailing dot is treated as a short/eighth-note slot.
+   if(dotCount>0){
+     item.beats=.5*dotCount;
+     item.gate=.46;
+     item.compactDot=true;
+   }
+
+   // Repeated hyphens extend the preceding sound.
+   if(dashCount===1){
+     item.beats=Math.max(item.beats||1,1);
+     item.gate=.96;
+     item.holdMark='tenuto';
+     item.requiredHoldBeats=.72;
+   }else if(dashCount===2){
+     item.beats=Math.max(item.beats||1,2);
+     item.gate=1;
+     item.holdMark='fermata';
+     item.requiredHoldBeats=1.38;
+   }else if(dashCount>=3){
+     item.beats=Math.max(item.beats||1,1+(dashCount*.5));
+     item.gate=1;
+     item.holdMark='extended';
+     item.requiredHoldBeats=Math.max(1.38,item.beats*.78);
+   }
+
+   if(dashCount || dotCount){
+     item.raw += '-'.repeat(dashCount)+'.'.repeat(dotCount);
+   }
+   return i;
+ }
 
  let i=0;
  while(i<text.length){
@@ -3862,18 +3936,24 @@ function parseSheet(){
    if(text[i]==='['){
      const end=text.indexOf(']',i+1);
      if(end!==-1){
-       const raw=text.slice(i,end+1);
        const inside=text.slice(i+1,end);
        const keys=[...inside].filter(isKey);
+
        if(keys.length){
-         scoreSeq.push({
-           raw,
+         const spaced=/\s/.test(inside);
+         const item={
+           raw:text.slice(i,end+1),
            keys,
            beats:1,
-           type:/\s/.test(inside)?'arpeggio':'chord',
-           gate:/\s/.test(inside)?.42:.88
-         });
+           type:spaced?'arpeggio':'chord',
+           gate:spaced?.42:.88,
+           simultaneous:!spaced
+         };
+         i=applyTrailingTiming(item,end+1);
+         scoreSeq.push(item);
+         continue;
        }
+
        i=end+1;
        continue;
      }
@@ -3886,45 +3966,23 @@ function parseSheet(){
        i++;
      }
 
+     // Contiguous keys such as dD / as are a legato phrase.
      if(run.length>1){
-       scoreSeq.push({
+       const item={
          raw:run,
          keys:[...run],
          beats:1,
          type:'legato',
          gate:1.08
-       });
+       };
+       i=applyTrailingTiming(item,i);
+       scoreSeq.push(item);
        continue;
      }
 
      const key=run[0];
 
-     if(text.slice(i,i+2)==='--'){
-       scoreSeq.push({
-         raw:key+'--',
-         keys:[key],
-         beats:2,
-         type:'fermata',
-         gate:1.0,
-         requiredHoldBeats:1.38
-       });
-       i+=2;
-       continue;
-     }
-
-     if(text[i]==='-' && isKey(text[i+1])){
-       scoreSeq.push({
-         raw:key+'-',
-         keys:[key],
-         beats:1,
-         type:'tenuto',
-         gate:.96,
-         requiredHoldBeats:.72
-       });
-       i+=1;
-       continue;
-     }
-
+     // q - w = dotted-note form from the existing notation rules.
      let j=i;
      while(j<text.length && /\s/.test(text[j]))j++;
      if(text[j]==='-'){
@@ -3944,30 +4002,53 @@ function parseSheet(){
        }
      }
 
-     scoreSeq.push({
+     // q-w = tenuto on q, then w is parsed next.
+     if(text[i]==='-' && isKey(text[i+1])){
+       scoreSeq.push({
+         raw:key+'-',
+         keys:[key],
+         beats:1,
+         type:'tenuto',
+         gate:.96,
+         requiredHoldBeats:.72
+       });
+       i+=1;
+       continue;
+     }
+
+     const item={
        raw:key,
        keys:[key],
        beats:1,
        type:'staccato',
        gate:.50
-     });
+     };
+     i=applyTrailingTiming(item,i);
+
+     if(item.holdMark==='tenuto'){
+       item.type='tenuto';
+     }else if(item.holdMark==='fermata' || item.holdMark==='extended'){
+       item.type='fermata';
+     }else if(item.compactDot){
+       item.type='staccato';
+     }
+
+     scoreSeq.push(item);
      continue;
    }
 
    i++;
  }
 
- // Practice sequence differs by difficulty.
- // Beginner ignores all articulation except true chords.
+ // Beginner ignores articulation/timing; advanced keeps it.
  if(E.advancedMode?.checked){
    seq=scoreSeq.map(x=>({...x}));
  }else{
    seq=[];
    for(const x of scoreSeq){
      if(x.type==='chord'){
-       seq.push({...x});
+       seq.push({...x,beats:1,gate:.88,holdMark:null,requiredHoldBeats:null});
      }else if(x.type==='legato' || x.type==='arpeggio'){
-       // Flatten phrases into plain single-note practice steps.
        x.keys.forEach(k=>seq.push({
          raw:k,
          keys:[k],
@@ -3976,7 +4057,6 @@ function parseSheet(){
          sourceType:x.type
        }));
      }else{
-       // staccato / tenuto / dotted / fermata become plain note checks.
        seq.push({
          raw:x.keys[0],
          keys:[x.keys[0]],
@@ -3993,6 +4073,7 @@ function parseSheet(){
  practiceOrderPos=0;
  holdStart=0;
  holdKey=null;
+ holdKeys.clear();
  stopHoldTimer();
  if(E.sequenceTrack)E.sequenceTrack.dataset.signature='';
  render();
@@ -4078,15 +4159,21 @@ function isShiftedLetterNote(k){
 function displayKey(k){
  if(typeof k!=='string')return k;
 
- // In Roblox piano, uppercase letters are NOT merely visual uppercase:
- // they mean Shift+letter (a different semitone).
  if(/^[A-Za-z]$/.test(k)){
-   const base=k.toLowerCase();
-   const shown=displayUppercase?base.toUpperCase():base;
-   return isShiftedLetterNote(k)?`⇧${shown}`:shown;
+   // Lowercase display = preserve the score exactly.
+   // d stays d, Shift+D stays D.
+   if(!displayUppercase){
+     return k;
+   }
+
+   // Uppercase display = ordinary notes are capitalized,
+   // so true shifted notes need a marker to remain distinguishable.
+   if(isShiftedLetterNote(k)){
+     return `⇧${k.toUpperCase()}`;
+   }
+   return k.toUpperCase();
  }
 
- // Shift-number symbols already visually identify themselves (! @ $ etc.)
  return k;
 }
 function displayRaw(raw){
@@ -4153,31 +4240,36 @@ function stopHoldTimer(){
 }
 
 function startHoldTimer(item){
-  stopHoldTimer();
-  const need=requiredHoldMs(item);
-  if(!need || !E.holdTimer)return;
+ stopHoldTimer();
+ const need=requiredHoldMs(item);
+ if(!need || !E.holdTimer)return;
 
-  const started=holdStart||performance.now();
+ const started=holdStart||performance.now();
 
-  const tick=()=>{
-    if(!holdStart || !holdKey || idx>=seq.length){
-      stopHoldTimer();
-      return;
-    }
+ const tick=()=>{
+   const holdingSingle=!!holdKey;
+   const holdingChord=holdKeys && holdKeys.size>0;
 
-    const elapsed=performance.now()-started;
-    const remain=Math.max(0,need-elapsed);
+   if(!holdStart || (!holdingSingle && !holdingChord) || idx>=seq.length){
+     stopHoldTimer();
+     return;
+   }
 
-    E.holdTimer.textContent=
-      remain>0
-        ? `${(remain/1000).toFixed(1)}초 더`
-        : `✓ ${(elapsed/1000).toFixed(1)}초`;
+   const elapsed=performance.now()-started;
+   const remain=Math.max(0,need-elapsed);
 
-    E.holdTimer.classList.toggle('done',remain<=0);
-    holdTimerRaf=requestAnimationFrame(tick);
-  };
+   if(remain>0){
+     E.holdTimer.textContent=`${(remain/1000).toFixed(1)}초 더`;
+     E.holdTimer.classList.remove('done');
+   }else{
+     E.holdTimer.textContent=`✓ 유지 완료 · ${(elapsed/1000).toFixed(1)}초`;
+     E.holdTimer.classList.add('done');
+   }
 
-  tick();
+   holdTimerRaf=requestAnimationFrame(tick);
+ };
+
+ tick();
 }
 
 function updateArticulationGuide(){
@@ -4313,6 +4405,7 @@ function advancePracticeStep(){
  practiceOrderPos=0;
  holdStart=0;
  holdKey=null;
+ holdKeys.clear();
 
  if(idx>=seq.length){
    idx=seq.length;
@@ -4399,9 +4492,21 @@ function judgePracticeKey(k){
 
    if(!remaining.length){
      if(now-holdStart<=340){
-       advancePracticeStep();
+       if(item.requiredHoldBeats>0){
+         // The chord was formed correctly. Now all chord keys must remain held.
+         holdStart=performance.now();
+         holdKeys=new Set(item.keys);
+         startHoldTimer(item);
+         setPracticeFeedback(
+           `화음 · ${item.dashCount>=3?'길게 유지 중':'유지 중'}`,
+           'chord'
+         );
+       }else{
+         advancePracticeStep();
+       }
      }else{
        practiceMatched.clear();
+       holdKeys.clear();
        wrongPracticeKey(k,'화음은 더 동시에 눌러주세요');
      }
    }else{
@@ -4414,7 +4519,7 @@ function judgePracticeKey(k){
  if(item.type==='arpeggio' || item.type==='legato'){
    const expected=item.keys[practiceOrderPos];
    if(k!==expected){
-     wrongPracticeKey(k,`${k.toUpperCase()} · 순서가 달라요 · ${displayKey(expected)} 차례`);
+     wrongPracticeKey(k,`${displayKey(k)} · 순서가 달라요 · ${displayKey(expected)} 차례`);
      return;
    }
 
@@ -4454,6 +4559,7 @@ function judgePracticeKey(k){
  // ADVANCED — duration marks MUST be held until release.
  if(['tenuto','dotted','fermata'].includes(item.type)){
    holdKey=k;
+   holdKeys=new Set([k]);
    holdStart=performance.now();
    startHoldTimer(item);
 
@@ -4486,13 +4592,40 @@ function manualUp(k){
  if(playing || !E.advancedMode?.checked || idx>=seq.length)return;
 
  const item=seq[idx];
- if(!item || !['tenuto','dotted','fermata'].includes(item.type))return;
- if(holdKey!==k || !holdStart)return;
+ if(!item)return;
+
+ // Duration-marked chord: every chord key must remain held until threshold.
+ if(item.type==='chord' && item.requiredHoldBeats>0 && holdKeys.size){
+   if(!holdKeys.has(k))return;
+
+   const held=performance.now()-holdStart;
+   const required=requiredHoldMs(item);
+
+   if(held>=required){
+     holdKeys.clear();
+     holdStart=0;
+     stopHoldTimer();
+     setPracticeFeedback(`화음 유지 ✓ ${Math.round(held)}ms`,'ok');
+     advancePracticeStep();
+   }else{
+     const remain=Math.max(0,required-held);
+     holdKeys.clear();
+     holdStart=0;
+     practiceMatched.clear();
+     stopHoldTimer();
+     wrongPracticeKey(k,`화음 · ${Math.round(remain)}ms 더 유지해야 합니다`);
+   }
+   return;
+ }
+
+ // Single-note duration marks.
+ if(!['tenuto','dotted','fermata'].includes(item.type))return;
+ if(!holdKeys.has(k) || !holdStart)return;
 
  const held=performance.now()-holdStart;
- const beat=(60000/(parseInt(E.bpm.value)||120))*(parseFloat(E.unit.value)||1);
- const required=beat*(item.requiredHoldBeats||.88);
+ const required=requiredHoldMs(item);
 
+ holdKeys.clear();
  holdKey=null;
  holdStart=0;
  stopHoldTimer();
@@ -4613,7 +4746,7 @@ function setPracticeMode(advanced,save=true){
 
  if(E.practiceModeDesc){
    E.practiceModeDesc.textContent=advanced
-     ?'고급 연습: 연주법과 유지 시간을 판정하지만 약간의 여유를 둡니다.'
+     ?'고급 연습: 연주법·Shift 반음·유지 시간을 판정합니다. 대문자는 Shift+키입니다.'
      :'초급 연습: 음과 화음 위주로 편하게 진행합니다.';
  }
 
@@ -4624,6 +4757,7 @@ function setPracticeMode(advanced,save=true){
  practiceOrderPos=0;
  holdStart=0;
  holdKey=null;
+ holdKeys.clear();
  stopHoldTimer();
  parseSheet();
 
@@ -4673,48 +4807,85 @@ E.saveSongModal.addEventListener('click',saveSongFromModal);
 E.songModal.addEventListener('pointerdown',e=>{
  if(e.target===E.songModal)closeSongModal();
 });
-window.addEventListener('keydown',e=>{
- if(e.key!=='Escape')return;
 
- if(!E.songModal.classList.contains('hidden')){
-   closeSongModal();
-   return;
+function eventToRobloxKey(e){
+ const code=e.code||'';
+
+ // Letters: use physical key + Shift state instead of e.key.
+ // This avoids case changing unexpectedly while Shift is pressed/released.
+ if(/^Key[A-Z]$/.test(code)){
+   const ch=code.slice(3).toLowerCase();
+   return e.shiftKey?ch.toUpperCase():ch;
  }
 
- if(document.body.classList.contains('settings-open')){
-   closeWorkspaceOverlay();
+ const digitMap={
+   Digit1:['1','!'],
+   Digit2:['2','@'],
+   Digit3:['3','#'],
+   Digit4:['4','$'],
+   Digit5:['5','%'],
+   Digit6:['6','^'],
+   Digit7:['7','&'],
+   Digit8:['8','*'],
+   Digit9:['9','('],
+   Digit0:['0',')']
+ };
+ if(digitMap[code]){
+   return digitMap[code][e.shiftKey?1:0];
  }
-});
-E.saveTxt.addEventListener('click',exportCurrent);E.exportAll.addEventListener('click',exportAll);
-E.importTxt.addEventListener('click',()=>E.fileInput.click());E.fileInput.addEventListener('change',()=>{importFiles([...E.fileInput.files]);E.fileInput.value=''});
-E.play.addEventListener('click',()=>{parseSheet();if(!scoreSeq.length){E.status.textContent='악보 없음';return}playing=true;practiceMatched.clear();setPracticeFeedback('자동 재생 중');initAudio();playStep()});
-E.pause.addEventListener('click',()=>{playing=false;clearTimeout(timer);practiceMatched.clear();E.status.textContent='직접 연습';setPracticeFeedback('직접 눌러서 이어서 진행할 수 있어요.');});
-E.stop.addEventListener('click',()=>stopPlayback(true));
-E.slower.addEventListener('click',()=>{
-  const cur=clampBpm(true);
-  E.bpm.value=Math.max(30,cur-5);
-  clampBpm(true);
-  E.status.textContent='속도 ↓';
-  if(playing){clearTimeout(timer);playStep()}
-});
-E.faster.addEventListener('click',()=>{
-  const cur=clampBpm(true);
-  E.bpm.value=Math.min(300,cur+5);
-  clampBpm(true);
-  E.status.textContent='속도 ↑';
-  if(playing){clearTimeout(timer);playStep()}
-});
-E.sheet.addEventListener('input',()=>{if(!playing){idx=0;parseSheet()}});E.bpm.addEventListener('input',()=>clampBpm(false));
-E.bpm.addEventListener('change',()=>clampBpm(true));
-E.bpm.addEventListener('blur',()=>clampBpm(true));
 
+ return e.key;
+}
+
+function releasePhysicalRobloxKey(e){
+ const code=e.code||'';
+
+ if(/^Key[A-Z]$/.test(code)){
+   const lower=code.slice(3).toLowerCase();
+   const upper=lower.toUpperCase();
+
+   // Release both logical variants because Shift may have changed
+   // between keydown and keyup.
+   if(KEY_TO_NOTE[lower])manualUp(lower);
+   if(KEY_TO_NOTE[upper])manualUp(upper);
+   return true;
+ }
+
+ const digitMap={
+   Digit1:['1','!'],
+   Digit2:['2','@'],
+   Digit3:['3','#'],
+   Digit4:['4','$'],
+   Digit5:['5','%'],
+   Digit6:['6','^'],
+   Digit7:['7','&'],
+   Digit8:['8','*'],
+   Digit9:['9','('],
+   Digit0:['0',')']
+ };
+ if(digitMap[code]){
+   for(const k of digitMap[code]){
+     if(KEY_TO_NOTE[k])manualUp(k);
+   }
+   return true;
+ }
+
+ return false;
+}
 
 window.addEventListener('keydown',e=>{
- if(['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName))return;
- const k=e.key;
- if(KEY_TO_NOTE[k]&&!e.repeat){e.preventDefault();manualDown(k)}
+ if(e.target && ['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName))return;
+ const k=eventToRobloxKey(e);
+ if(KEY_TO_NOTE[k]&&!e.repeat){
+   e.preventDefault();
+   manualDown(k);
+ }
 });
-window.addEventListener('keyup',e=>{const k=e.key;if(KEY_TO_NOTE[k])manualUp(k)});
+window.addEventListener('keyup',e=>{
+ if(releasePhysicalRobloxKey(e))return;
+ const k=eventToRobloxKey(e);
+ if(KEY_TO_NOTE[k])manualUp(k);
+});
 
 E.volume.addEventListener('input',()=>{initAudio();updateAudioMix()});
 E.reverb.addEventListener('input',()=>{initAudio();updateAudioMix()});
